@@ -8,7 +8,7 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 
 class QueryCombinedSales:
 
-    def __init__(self) -> None:
+    def __init__(self):
         with open("./load/db.yaml", "r") as stream:
             try:
                 db = yaml.safe_load(stream)
@@ -26,7 +26,7 @@ class QueryCombinedSales:
 
         try:
             self.cnx = mysql.connector.connect(**config)
-            self.cursor = self.cnx.self.cursor()
+            self.cursor = self.cnx.cursor()
         except Exception as e:
             print("---- Error: creating mysql connection ----\n", e)
             sys.exit(1)
@@ -35,8 +35,7 @@ class QueryCombinedSales:
 
 
     def setup_df(self):
-        self.cursor.execute("USE mrts;")
-
+        print("Processing: retrieving data from combined_sales table")
         # Do not combine by year. Doing so may hide months with empty sales that should be interpolated
         query = """
                     SELECT sales_date, CAST(sales AS UNSIGNED)
@@ -46,17 +45,24 @@ class QueryCombinedSales:
                 
         # Filter by Kind of Business
         params = ("Retail and food services sales, total",)
-        self.cursor.execute(query, params)
+        try: 
+            self.cursor.execute("USE mrts;")
+            self.cursor.execute(query, params)
+        except Exception as e:
+            print("Error: records not retrieved from combined_sales table\n", e)
+            sys.exit(1)
 
         sales_date = []
         sales = []
 
         # Get DB data
         for row in self.cursor.fetchall():
-            d = row[0]
+            row_date = row[0]
             # Convert to datetime, so it can be grouped by years later
-            sales_date.append(datetime(d.year, d.month, d.day))
+            sales_date.append(datetime(row_date.year, row_date.month, row_date.day))
             sales.append(row[1])
+
+        print("Completed: retrieved data from combined_sales table")
 
         # Close connections     
         self.cursor.close()
@@ -72,25 +78,28 @@ class QueryCombinedSales:
         self.df['sales'].interpolate()
 
 
-    def show_monthly_show(self):
-        # Get Monthly Sales  
+    # Get Monthly Sales 
+    def get_monthly(self):
+        print("Processing: Monthly Sales")
         # Setup monthly plot  
         fig, ax = plt.subplots()
         ax.plot(self.df["sales_date"], self.df["sales"])
         plt.gca().set(title="Monthly Retail and Food Services Sales", xlabel="Months", ylabel="Sales")
+        print("Completed: Monthly Sales")
 
-
-    def get_annual_sales(self):
-        # Get Annual Sales
+    # Get Annual Sales
+    def get_annual(self):
+        print("Processing: Annual Sales")
         # Group by year
         df_annual = self.df.groupby(pd.Grouper(key='sales_date', freq='Y')).sum() 
         fig, ax = plt.subplots()
         ax.plot(df_annual.index, df_annual["sales"])
         plt.gca().set(title="Annual Retail and Food Services Sales", xlabel="Years", ylabel="Sales")
+        print("Completed: Annual Sales")
 
-
+    # Monthly Sales without Seasonality
     def get_monthly_decompose(self):
-        # Monthly Sales without Seasonality
+        print("Processing: Monthly Sales without Seasonality")
         self.df.set_index("sales_date", inplace=True)
         # TEST: Extract trend and seasonality and see whether multiplicative or additive is better
         # Multiplicative Decomposition 
@@ -107,10 +116,12 @@ class QueryCombinedSales:
         ax.plot(self.df.index, result_mul.trend, label="Sales w/o Seasonality")
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Monthly Retail and Food Services Sales\n(with multiplicative decompose)", xlabel="Months", ylabel="Sales")
-
-
-    def get_mo_seasonality_mma(self):
-        # Monthly Sales without Seasonality and a 5 Month Moving Average
+        print("Completed: Monthly Sales without Seasonality")
+    
+    
+    # Monthly Sales without Seasonality and a 5 Month Moving Average
+    def get_monthly_decompose_mma(self):
+        print("Processing: Monthly Sales without Seasonality and a 5 Month Moving Average")
         df_rolling = self.df.copy(deep=True)
         # Multiplicative Decomposition 
         result_mul = seasonal_decompose(self.df['sales'], model='multiplicative', extrapolate_trend='freq')
@@ -123,9 +134,14 @@ class QueryCombinedSales:
         ax.plot(df_rolling.index, df_rolling["sales"], label="Sales 5MA w/o Seasonality", color="green")
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Monthly Retail and Food Services Sales\n(with multiplicative decompose and 5 month moving averages (5MA))", xlabel="Months", ylabel="Sales")
-
+        print("Completed: Monthly Sales without Seasonality and a 5 Month Moving Average")
 
     def show_reports(self):
+        self.setup_df()
+        self.get_monthly()
+        self.get_annual()
+        self.get_monthly_decompose()
+        self.get_monthly_decompose_mma()
         # Draw all plots
         plt.show()
 

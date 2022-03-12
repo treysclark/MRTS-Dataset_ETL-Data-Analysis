@@ -35,7 +35,7 @@ class EvalNames:
 
     def update_cat_code_year_nans(self):
         # Notify user of status
-        self.msg_cat_code_year_nans += "Processing: displaying category codes (NAICS) that have nans by year"
+        self.msg_cat_code_year_nans += "Processing: displaying category codes (NAICS) that have missing values (nans) by year"
 
         # Split df into groups by "cat_code" then by the "sales_date" year
         df_store_gk = self.df_store.groupby(["cat_code", self.df_store.sales_date.map(lambda x: x.year)])
@@ -79,4 +79,4 @@ class EvalNames:
                 # Store grouped dataframe with nans greater than zero
                 self.dict_df_nans[names] = df_group
 
-        self.msg_cat_code_year_nans += "\nCompleted: displayed category codes (NAICS) that have nans by year"
+        self.msg_cat_code_year_nans += "\nCompleted: displayed category codes (NAICS) that have missing values (nans) by year"

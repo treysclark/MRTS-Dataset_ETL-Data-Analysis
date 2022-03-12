@@ -26,25 +26,31 @@ class QueryRollingTimeWindow:
         }
 
         try:
-            cnx = mysql.connector.connect(**config)
-            self.cursor = cnx.cursor()
+            self.cnx = mysql.connector.connect(**config)
+            self.cursor = self.cnx.cursor()
         except Exception as e:
             print("---- Error: creating mysql connection ----\n", e)
             sys.exit(1)
 
-        self.cursor.execute("USE mrts;")
+    def setup(self):
+        print("Processing: retrieving data from store_sales table")
         query = """
                     SELECT 
                         sales_date,
                         MAX(CASE WHEN cat_code=%s THEN sales END) as new_cars,
                         MAX(CASE WHEN cat_code=%s THEN sales END) as used_cars
-                    FROM sales
+                    FROM store_sales
                     GROUP BY 1
                 ;"""
 
         # Filter by NAICS Codes
         params = (44111,44112)
-        self.cursor.execute(query, params)
+        try: 
+            self.cursor.execute("USE mrts;")
+            self.cursor.execute(query, params)
+        except Exception as e:
+            print("Error: records not retrieved from store_sales table\n", e)
+            sys.exit(1)
 
         sales_date = []
         new_cars = []
@@ -58,19 +64,25 @@ class QueryRollingTimeWindow:
             # Get sales
             new_cars.append(row[1])
             used_cars.append(row[2])
+        print("Completed: retrieved data from store_sales table")
         # Close connections     
         self.cursor.close()
-        cnx.close()
+        self.cnx.close()
         # Setup dictionary to hold DB values
         dict = {"sales_date": sales_date, "new_cars":new_cars, "used_cars":used_cars}
         # Create DataFrame and interpolate missing values
-        df = pd.DataFrame(dict)
-        # Show missing values
-        print(df.isna().sum())
-
+        self.df = pd.DataFrame(dict)
+        # Check for missing values
+        sum_nans = self.df.isna().sum()        
+        if sum_nans.sum() == 0:
+            nan_msg = "Verification: No missing values (nans)"
+        else:
+            nan_msg = f"Verification: missing values (nans)\n\t{sum_nans}"
+        print(nan_msg)
 
     # Annual Sales
     def get_annual(self):
+        print("Processing: Annual Sales")
         # Group by year
         df_annual = self.df.groupby(pd.Grouper(key='sales_date', freq='Y')).sum()
         # Setup annual plot
@@ -79,10 +91,12 @@ class QueryRollingTimeWindow:
         ax.plot(df_annual.index, df_annual["used_cars"], label="Used")
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Annual Car Sales", xlabel="Years", ylabel="Sales")
+        print("Completed: Annual Sales")
 
 
     # Monthly Sales 5MA
     def get_monthly_5ma(self):
+        print("Processing: Monthly Sales 5MA")
         df_rolling = self.df.copy(deep=True)
         df_rolling["new_cars"] = self.df["new_cars"].rolling(5).mean()
         df_rolling["used_cars"] = self.df["used_cars"].rolling(5).mean()
@@ -96,10 +110,12 @@ class QueryRollingTimeWindow:
         ax.plot(df_rolling.index, df_rolling["used_cars"], label="Used w/ 5MA", color="purple")
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Monthly New and Used Car Dealers Sales\n(with 5 Month Moving Average (5MA))", xlabel="Months", ylabel="Sales")
+        print("Completed: Monthly Sales 5MA")
 
 
     # Monthly Sales w/out Seasonality 
     def get_monthly_decompose(self):
+        print("Processing: Monthly Sales w/out Seasonality ")
         self.df.set_index("sales_date", inplace=True)
         # TEST: Extract trend and seasonality and see whether multiplicative or additive is better
         # Multiplicative Decomposition 
@@ -121,10 +137,12 @@ class QueryRollingTimeWindow:
         ax.plot(self.df.index, result_mul_used.trend, label="Used w/o seasonality", color="purple")
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Monthly New and Used Car Dealers Sales\n(with multiplicative decompose)", xlabel="Months", ylabel="Sales")
+        print("Completed: Monthly Sales w/out Seasonality ")
 
 
     # Monthly Sales with 5MA Decompoose 
     def get_monthly_decompose_5ma(self):
+        print("Processing: Monthly Sales with 5MA Decompoose")
         df_rolling_decompose = self.df.copy(deep=True)
         # Multiplicative Decomposition 
         result_mul_new = seasonal_decompose(self.df['new_cars'], model='multiplicative', extrapolate_trend='freq')
@@ -141,8 +159,14 @@ class QueryRollingTimeWindow:
         ax.plot(df_rolling_decompose.index, df_rolling_decompose["used_cars"], label="Used 5MA w/o seasonality", color="purple")
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Monthly New and Used Car Dealers Sales\n(with multiplicative decompose and 5 month moving averages (5MA))", xlabel="Months", ylabel="Sales")
+        print("Completed: Monthly Sales with 5MA Decompoose")
 
 
     # Draw all plots
     def show_reports(self):
+        self.setup()
+        self.get_annual()
+        self.get_monthly_5ma()
+        self.get_monthly_decompose()
+        self.get_monthly_decompose_5ma()
         plt.show()
