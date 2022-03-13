@@ -25,28 +25,38 @@ if len(sys.argv) > 1:
             manage_db.create_tables()
             manage_db.insert_combined_sales()
             manage_db.insert_store_sales()
+            sys.exit(0)
         if argument == "-clean":
             clean.Clean().get_combined_sales()
             clean.Clean().get_cleaned_store_sales()
+            sys.exit(0)
         if argument == "-drop_db":
             manage_db.drop_db()
+            sys.exit(0)
         if argument == "-drop_tables":
             manage_db.drop_tables()
+            sys.exit(0)
         if argument == "-empty_tables":
             manage_db.empty_tables()
+            sys.exit(0)
         if argument == "-validate":
-            pass
-        if argument == "-query_sales":
+            validation.validate_record_count()
+            sys.exit(0)
+        if argument == "-query_combined":
             query_sales.QueryCombinedSales().show_reports()
+            sys.exit(0)
         if argument == "-query_percent":
             query_percent.QueryPercentChange().show_reports()
+            sys.exit(0)
         if argument == "-query_rolling":
             query_rolling.QueryRollingTimeWindow().show_reports()
+            sys.exit(0)
         if argument == "-query_trends":
             query_trends.QueryTrends().show_reports()
+            sys.exit(0)
         else:
             print("""Argument not recognized please use one of the following:
                 -etl, -clean, -drop_db, -drop_tables, -empty_tables, -validate,
-                -query_sales, -query_percent, -query_rolling, -query_trends
+                -query_combined, -query_percent, -query_rolling, -query_trends
                 """)
 

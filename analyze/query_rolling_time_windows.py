@@ -78,6 +78,9 @@ class QueryRollingTimeWindow:
             nan_msg = "Verification: No missing values (nans)"
         else:
             nan_msg = f"Verification: missing values (nans)\n\t{sum_nans}"
+            nan_msg += "\n Nans will be interpolated."
+            # Interpolate for missing values
+            self.df.interpolate(inplace=True)
         print(nan_msg)
 
     # Annual Sales

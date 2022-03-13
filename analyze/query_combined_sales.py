@@ -73,9 +73,17 @@ class QueryCombinedSales:
 
         # Create DataFrame and interpolate any possible missing values
         self.df = pd.DataFrame(dict)
+        # Check for missing values
+        sum_nans = self.df.isna().sum()        
+        if sum_nans.sum() == 0:
+            nan_msg = "Verification: No missing values (nans)"
+        else:
+            nan_msg = f"Verification: missing values (nans)\n\t{sum_nans}"
+            nan_msg += "\n Nans will be interpolated."
+            # Interpolate for missing values
+            self.df['sales'].interpolate(inplace=True)
+        print(nan_msg)
 
-        # Interpolate for missing values
-        self.df['sales'].interpolate()
 
 
     # Get Monthly Sales 

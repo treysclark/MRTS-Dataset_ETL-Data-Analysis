@@ -12,8 +12,7 @@ class GetSalesDF:
 
         # Load retail combined sales and store sales dataframes
         self.load_all_df()
-
-
+        
 
     # Load retail combined sales and store sales dataframes
     def load_all_df(self):

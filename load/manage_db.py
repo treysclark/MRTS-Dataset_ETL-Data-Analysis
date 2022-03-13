@@ -36,7 +36,8 @@ try:
                                                format(db['user'], db['pwrd'], 
                                                       db['host'], db['db']))
 except Exception as e:
-    print("---- Error: sqlalchemy connection not created -----\n", e)   
+    print("---- Error: sqlalchemy connection not created -----\n", e)  
+    sys.exit(1)  
 
 
 
@@ -46,7 +47,7 @@ def create_db():
         cursor.execute("CREATE DATABASE IF NOT EXISTS mrts")
     except Exception as e:
         print("----- Error: mrts database not created -----\n", e) 
-        return   
+        return sys.exit(1)   
     print("Completed: created mrts database")  
 
 
@@ -79,7 +80,7 @@ def create_tables():
         cursor.execute(create_store_sales)
     except Exception as e:
         print("----- Error: tables not created -----\n", e) 
-        return   
+        return sys.exit(1)  
     print("Completed: created tables") 
 
 
@@ -93,7 +94,7 @@ def insert_combined_sales():
             df_combined.to_sql(con=conn, name='combined_sales', if_exists='append', index=False)    
         except Exception as e:
             print("----- Error: combined_sales not appended ------\n", e) 
-            return   
+            return sys.exit(1)   
         print("Completed: appended combined_sales table")                                             
 
 
@@ -107,8 +108,44 @@ def insert_store_sales():
             df_store.to_sql(con=conn, name='store_sales', if_exists='append', index=False)
         except Exception as e:
             print("----- Error: store_sales not appended -----\n", e) 
-            return   
-        print("Completed: appended store_sales table")   
+            return sys.exit(1)   
+        print("Completed: appended store_sales table")  
+
+
+def read_combined_sales_count(): 
+    print("Processing: counting records in combined_sales table") 
+ 
+     # SQL STMT: Count records in store_sales table
+    count_combined_sales = """SELECT COUNT(*) FROM combined_sales;"""
+
+    try:
+        cursor.execute("USE mrts") 
+        cursor.execute(count_combined_sales)
+    except Exception as e:
+        print("----- Error: counting records in combined_sales table -----\n", e) 
+        return sys.exit(1)   
+    print("Completed: counting records in combined_sales table")   
+    result = cursor.fetchone()
+    # Return number of records in store_sales table
+    return result[0]
+
+
+def read_store_sales_count(): 
+    print("Processing: counting records in store_sales table") 
+ 
+     # SQL STMT: Count records in store_sales table
+    count_store_sales = """SELECT COUNT(*) FROM store_sales;"""
+
+    try:
+        cursor.execute("USE mrts") 
+        cursor.execute(count_store_sales)
+    except Exception as e:
+        print("----- Error: counting records in store_sales table -----\n", e) 
+        return sys.exit(1) 
+    print("Completed: counting records in store_sales table")   
+    result = cursor.fetchone()
+    # Return number of records in store_sales table
+    return result[0]
 
 
 def drop_db():
@@ -117,7 +154,7 @@ def drop_db():
         cursor.execute("DROP DATABASE IF EXISTS mrts")
     except Exception as e:
         print("----- Error: mrts database not dropped ------\n", e) 
-        return   
+        return sys.exit(1)   
     print("Completed: dropped mrts database")   
 
 
@@ -129,7 +166,7 @@ def drop_tables():
         cursor.execute("DROP TABLE IF EXISTS store_sales")        
     except Exception as e:
         print("----- Error: tables not dropped -----\n", e) 
-        return   
+        return sys.exit(1)   
     print("Completed: dropped tables") 
 
 
@@ -141,7 +178,7 @@ def empty_tables():
         cursor.execute("TRUNCATE TABLE store_sales")        
     except Exception as e:
         print(" ----- Error: tables not emptied -----\n", e) 
-        return   
+        return sys.exit(1)   
     print("Completed: emptied tables") 
 
 
