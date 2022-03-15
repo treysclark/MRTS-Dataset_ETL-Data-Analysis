@@ -15,8 +15,8 @@ class Clean:
     def show_nans(self):    
         print("Processing: retrieving data from census.gov")
         # Get all sales dataframes
-        self.df_combined = sales_dfs.GetSalesDF().df_combined_sales
-        self.df_store = sales_dfs.GetSalesDF().df_store_sales
+        self.df_combined = sales_dfs.GetSalesDF("monthly_sales").df_combined_sales
+        self.df_store = sales_dfs.GetSalesDF("monthly_sales").df_store_sales
         print("Completed: retrieved data from census.gov")
 
         self.evals = eval_nans.EvalNames(self.df_store)
@@ -25,14 +25,14 @@ class Clean:
     def get_combined_sales(self):    
         print("Processing: retrieving combined_sales data from census.gov")
         # Get all sales dataframes
-        self.df_combined = sales_dfs.GetSalesDF().df_combined_sales
+        self.df_combined = sales_dfs.GetSalesDF("monthly_sales").df_combined_sales
         print("Completed: retrieved combined_sales data from census.gov")
         return self.df_combined
 
     def get_cleaned_store_sales(self):    
         print("Processing: retrieving store_sales data from census.gov")
         # Get all sales dataframes
-        self.df_store = sales_dfs.GetSalesDF().df_store_sales
+        self.df_store = sales_dfs.GetSalesDF("monthly_sales").df_store_sales
         print("Completed: retrieved store_sales data from census.gov")
 
         self.evals = eval_nans.EvalNames(self.df_store)
@@ -87,7 +87,7 @@ class Clean:
 
         print("Processing: retrieving store_sales data from census.gov")
         # Get all sales dataframes
-        self.df_store = sales_dfs.GetSalesDF().df_store_sales
+        self.df_store = sales_dfs.GetSalesDF("monthly_sales").df_store_sales
         print("Completed: retrieved store_sales data from census.gov")
 
         self.evals = eval_nans.EvalNames(self.df_store)

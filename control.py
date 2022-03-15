@@ -40,7 +40,8 @@ if len(sys.argv) > 1:
             manage_db.empty_tables()
             sys.exit(0)
         if argument == "-validate":
-            validation.validate_record_count()
+            # validation.validate_record_count()
+            validation.validate_totals()
             sys.exit(0)
         if argument == "-query_combined":
             query_sales.QueryCombinedSales().show_reports()

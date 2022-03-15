@@ -1,6 +1,10 @@
 import sys
+import pandas as pd
+import numpy as np
+
 from transform.clean import Clean
 import load.manage_db as manage_db
+from extract.get_sales_df import GetSalesDF
 
 def validate_record_count():
     # Verify accuracy of combined_sales db insertion
@@ -27,4 +31,26 @@ def validate_record_count():
 
 
 def validate_totals():
-    pass
+    # Get totals from census.gov
+    df_source_totals = GetSalesDF("annual_sales").df_totals
+    df_source_totals.sort_values(['year', 'cat_name'], ascending=[True, True], inplace=True)
+
+    # Get totals from database
+    df_db_totals = pd.DataFrame(columns=["year", "cat_name", "annual_sales"])
+    db_totals = manage_db.read_calc_annual_sales()
+    # Add list of tuples to dataframe Source: https://stackoverflow.com/a/48220676/848353
+    df_db_totals[["year", "cat_name", "annual_sales"]] = pd.DataFrame(db_totals)
+    df_db_totals.sort_values(['year', 'cat_name'], ascending=[True, True], inplace=True)
+
+    # Merge source and db by matching year and cat_name
+    df_merge = pd.merge(df_source_totals, df_db_totals, on= ["year", "cat_name"], suffixes=("_source", "_db"), how="inner", indicator=True)
+    # Compare annual sales between source and db
+    df_merge["match"] = np.where(df_merge["annual_sales_source"] != df_merge["annual_sales_db"], True, False)
+    # Count number of variances annual sales between source
+    count_var = df_merge["match"].sum()
+    if count_var == 0:
+        print("Success: no variance in annual sales between source and db")
+    else: 
+        print(f"Variance: there are {count_var} variance(s) in annual sales between source and db\nThe variances are as follows:")
+        df_vars = df_merge[df_merge["match"] == True]
+        print(df_vars.iloc[:,0:4])

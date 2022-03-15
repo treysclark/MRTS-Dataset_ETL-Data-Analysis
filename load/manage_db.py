@@ -148,6 +148,29 @@ def read_store_sales_count():
     return result[0]
 
 
+def read_calc_annual_sales(): 
+    print("Processing: calculating annual sales from all tables") 
+ 
+    calc_annual_sales = """
+                            SELECT YEAR(sales_date), cat_name, SUM(sales)
+                            FROM combined_sales
+                            GROUP BY YEAR(sales_date), cat_name
+                            UNION
+                            SELECT YEAR(sales_date), cat_name, SUM(sales)
+                            FROM store_sales
+                            GROUP BY YEAR(sales_date), cat_name
+                        ;"""
+
+    try:
+        cursor.execute("USE mrts") 
+        cursor.execute(calc_annual_sales)
+    except Exception as e:
+        print("----- Error: counting records in store_sales table -----\n", e) 
+        return sys.exit(1)  
+    result = cursor.fetchall()
+    print(f"Completed: calculated annual sales ({'{:,}'.format(len(result))} records) from all tables")  
+    return result
+
 def drop_db():
     print("Processing: dropping mrts database") 
     try:
