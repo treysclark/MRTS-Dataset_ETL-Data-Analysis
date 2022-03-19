@@ -15,24 +15,26 @@ class Clean:
     def show_nans(self):    
         print("Processing: retrieving data from census.gov")
         # Get all sales dataframes
-        self.df_combined = sales_dfs.GetSalesDF("monthly_sales").df_combined_sales
-        self.df_store = sales_dfs.GetSalesDF("monthly_sales").df_store_sales
+        self.df_combined = sales_dfs.GetSalesDF("combined_sales").df_combined_sales
+        self.df_store = sales_dfs.GetSalesDF("store_sales").df_store_sales
         print("Completed: retrieved data from census.gov")
 
         self.evals = eval_nans.EvalNames(self.df_store)
         self.show_store_nans()
 
+
     def get_combined_sales(self):    
         print("Processing: retrieving combined_sales data from census.gov")
         # Get all sales dataframes
-        self.df_combined = sales_dfs.GetSalesDF("monthly_sales").df_combined_sales
+        self.df_combined = sales_dfs.GetSalesDF("combined_sales").df_combined_sales
         print("Completed: retrieved combined_sales data from census.gov")
         return self.df_combined
+
 
     def get_cleaned_store_sales(self):    
         print("Processing: retrieving store_sales data from census.gov")
         # Get all sales dataframes
-        self.df_store = sales_dfs.GetSalesDF("monthly_sales").df_store_sales
+        self.df_store = sales_dfs.GetSalesDF("store_sales").df_store_sales
         print("Completed: retrieved store_sales data from census.gov")
 
         self.evals = eval_nans.EvalNames(self.df_store)
@@ -48,11 +50,10 @@ class Clean:
 
     def remove_store_nan_dfs(self):
         # Based on evaluation all nans must be dropped
-        # Except 1: cat_code 4422 year 2020 
-        # Except 2: cat_code 442299 year 2020
-        # Except 3: cat_code 44811 year 2020
-        # Except 4: cat_code 722511 year 2020
-        keep_nans = [("4422", 2020), ("442299", 2020), ("44811", 2020), ("722511", 2020)]
+        #   Except 1: cat_code 4422 year 2020 
+        #   Except 2: cat_code 442299 year 2020
+        #   Except 3: cat_code 44811 year 2020
+        keep_nans = [("4422", 2020), ("442299", 2020), ("44811", 2020)]
 
         # Notify user of status
         print(f"Processing: removing all nans except the following cat_codes by year\n\t{keep_nans}")
@@ -83,6 +84,7 @@ class Clean:
         print(f"Completed: removed all nans except the following cat_codes by year\n\t{keep_nans}")
 
 
+    # Used for data validation
     def count_store_records(self):
 
         print("Processing: retrieving store_sales data from census.gov")
@@ -91,12 +93,12 @@ class Clean:
         print("Completed: retrieved store_sales data from census.gov")
 
         self.evals = eval_nans.EvalNames(self.df_store)
-        # Based on evaluation all nans must be dropped
-        # Except 1: cat_code 4422 year 2020 
-        # Except 2: cat_code 442299 year 2020
-        # Except 3: cat_code 44811 year 2020
-        # Except 4: cat_code 722511 year 2020
-        keep_nans = [("4422", 2020), ("442299", 2020), ("44811", 2020), ("722511", 2020)]
+        # Based on evaluation all nans must be dropped, since they are missing multiple years of sales data
+        #   Except 1: cat_code 4422 year 2020 
+        #   Except 2: cat_code 442299 year 2020
+        #   Except 3: cat_code 44811 year 2020
+        # The exceptions above should be interpolated since they are only missing a few months out of the year
+        keep_nans = [("4422", 2020), ("442299", 2020), ("44811", 2020)]
 
         # Notify user of status
         print(f"Processing: counting number of nan rows except the following cat_codes by year\n{keep_nans}")

@@ -10,7 +10,8 @@ class EvalNames:
         self.msg_cat_code_year_nans = ""
         self.update_cat_code_year_nans()
         
-
+        
+    # Currently not used
     def show_year_nans(self):
         # Split df into groups by "cat_code"
         df_store_gk = self.df_store.groupby(self.df_store.sales_date.map(lambda x: x.year))
@@ -22,6 +23,7 @@ class EvalNames:
                 print(f"year: {name} has {nans} nans")
 
 
+    # Currently not used
     def show_cat_code_nans(self):
         # Split df into groups by "cat_code"
         df_store_gk = self.df_store.groupby("cat_code")

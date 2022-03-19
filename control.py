@@ -27,7 +27,7 @@ if len(sys.argv) > 1:
             manage_db.insert_store_sales()
             sys.exit(0)
         if argument == "-clean":
-            clean.Clean().get_combined_sales()
+           # clean.Clean().get_combined_sales()
             clean.Clean().get_cleaned_store_sales()
             sys.exit(0)
         if argument == "-drop_db":

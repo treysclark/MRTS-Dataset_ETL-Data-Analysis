@@ -10,24 +10,35 @@ class GetSalesDF:
         self.df_totals = pd.DataFrame()
         self.df_combined_sales = pd.DataFrame()
         self.df_store_sales = pd.DataFrame()
+        # Unformated Excel columns   
+        self.col_names = ["cat_code", "cat_name", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 
-        if load_type == "monthly_sales":
-            # Unformated Excel columns   
-            self.col_names = ["cat_code", "cat_name", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-            # Load retail combined sales and store sales dataframes
-            self.load_sales_dfs()
+        if load_type == "combined_sales":
+            self.load_combined_sales_df()
+        elif load_type == "store_sales":
+            self.load_store_sales_df()
         elif load_type == "annual_sales":
             self.load_total_df()
         
 
-    # Load retail combined sales and store sales dataframes
-    def load_sales_dfs(self):
-        for sheet_num in range(0, 30):
-            self.cur_year = 2021 - sheet_num
+    # Load combined sales dataframes
+    def load_combined_sales_df(self):
+        # Skip over FY2022, which is in progress. Dataset will be based on 1992 - 2021
+        for sheet_num in range(1, 30):
+            self.cur_year = 2022 - sheet_num
             # Access Excel sheet from Census.gov website
             self.df_raw = pd.read_excel("https://www.census.gov/retail/mrts/www/mrtssales92-present.xls", sheet_name=sheet_num)
             # Get converted retail sales
             self.df_combined_sales = self.df_combined_sales.append(self.get_combined_df())
+
+
+    # Load store sales dataframes
+    def load_store_sales_df(self):
+        # Skip over FY2022, which is in progress. Dataset will be based on 1992 - 2021
+        for sheet_num in range(1, 30):
+            self.cur_year = 2022 - sheet_num
+            # Access Excel sheet from Census.gov website
+            self.df_raw = pd.read_excel("https://www.census.gov/retail/mrts/www/mrtssales92-present.xls", sheet_name=sheet_num)
             # Get converted store sales
             self.df_store_sales = self.df_store_sales.append(self.get_store_df())
 
@@ -35,8 +46,9 @@ class GetSalesDF:
     # Load totals (annual sales) for retail combined sales and store sales dataframes
     def load_total_df(self):
         print("Processing: retrieving annual sales from census.gov")
-        for sheet_num in range(0, 30):
-            self.cur_year = 2021 - sheet_num
+        # Skip over FY2022, which is in progress. Dataset will be based on 1992 - 2021
+        for sheet_num in range(1, 30):
+            self.cur_year = 2022 - sheet_num
             # Access Excel sheet from Census.gov website
             self.df_raw = pd.read_excel("https://www.census.gov/retail/mrts/www/mrtssales92-present.xls", sheet_name=sheet_num)
             # Get annual sales
@@ -50,7 +62,8 @@ class GetSalesDF:
     def get_combined_df(self):
         # Access retail sales section
         df_combined_unf = self.df_raw.iloc[5:12, 1:14]
-        
+        print("self.col_names[1:]", self.col_names[1:])
+        print("df_combined_unf.columns", df_combined_unf.columns)
         # Assign column names except "cat_code", which is not part of retail sales
         df_combined_unf.columns=self.col_names[1:]
 
