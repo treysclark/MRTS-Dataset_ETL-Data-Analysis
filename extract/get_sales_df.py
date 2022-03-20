@@ -62,8 +62,7 @@ class GetSalesDF:
     def get_combined_df(self):
         # Access retail sales section
         df_combined_unf = self.df_raw.iloc[5:12, 1:14]
-        print("self.col_names[1:]", self.col_names[1:])
-        print("df_combined_unf.columns", df_combined_unf.columns)
+
         # Assign column names except "cat_code", which is not part of retail sales
         df_combined_unf.columns=self.col_names[1:]
 

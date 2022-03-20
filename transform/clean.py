@@ -2,7 +2,7 @@
 import pandas as pd
 import extract.get_sales_df as sales_dfs
 import transform.eval_nans as eval_nans
-
+import sys
 
 class Clean:
 
@@ -49,74 +49,58 @@ class Clean:
        
 
     def remove_store_nan_dfs(self):
-        # Based on evaluation all nans must be dropped
-        #   Except 1: cat_code 4422 year 2020 
-        #   Except 2: cat_code 442299 year 2020
-        #   Except 3: cat_code 44811 year 2020
-        keep_nans = [("4422", 2020), ("442299", 2020), ("44811", 2020)]
 
         # Notify user of status
-        print(f"Processing: removing all nans except the following cat_codes by year\n\t{keep_nans}")
+        print(f"Processing: dropping or interpolating all nans")
 
         # Used to do quick check of expected record removal
         prev_record_count = self.df_store.shape[0]
-        count_rows_removed = 0
+        expected_records_interpolated = self.evals.count_interpolations
+   
+        # Interpolate grouped nan dataframe then merge with df_store if it has between (1-3) nans per year
+        df_interpolated = self.evals.df_nans_interpolate.interpolate()
+        # Match the interpolated values with the df_store dataframe based on the same cat_code, cat_name, and sales_date
+        self.df_store = self.df_store.merge(df_interpolated, how='left', left_on=['cat_code', 'cat_name','sales_date'], right_on=['cat_code', 'cat_name','sales_date'])
+        # Merge the two sales columns into one new column, then drop extra columns
+        self.df_store ['sales'] = self.df_store['sales_x'].where(self.df_store['sales_x'].notnull(), self.df_store['sales_y'])    
+        self.df_store.drop(['sales_x','sales_y'],axis=1, inplace=True)
 
-        for key, df_group in self.evals.dict_df_nans.items():
-            if key not in keep_nans:
-                # Remove grouped nan dataframes from df_store if they are not in the exclusion list 
-                self.df_store = pd.concat([self.df_store, df_group, df_group]).drop_duplicates(keep=False)
-                # Track rows removed from df
-                count_rows_removed += 1
+        # Remove grouped nan dataframes from df_store if they contain too many nans (>3) by year to be interpolated 
+        df_dropped = self.evals.df_nans_drop
+        self.df_store = pd.concat([self.df_store, df_dropped, df_dropped]).drop_duplicates(keep=False)
 
         # Quick check that the correct number of records were removed
-
-        # Multiply by 12 since there are 12 months in a year
-        actual_record_count = count_rows_removed * 12
-        expected_record_count = prev_record_count - self.df_store.shape[0]
-        record_removal_diff = expected_record_count - actual_record_count
-        msg_success = f"Validation Success: Correct number of nan records {actual_record_count} removed"
-        msg_variance = f"Validation Variance: expected ({expected_record_count}) and actual ({actual_record_count}) record removal vary by {record_removal_diff}"
-        removal_chk_msg = msg_success if record_removal_diff == 0 else msg_variance
-        print(removal_chk_msg)
-
+        dropped_record_count = df_dropped.shape[0]
+        expected_record_count = prev_record_count - self.df_store.shape[0] 
+        record_removal_diff = expected_record_count - dropped_record_count 
         # Notify user
-        print(f"Completed: removed all nans except the following cat_codes by year\n\t{keep_nans}")
+        if record_removal_diff == 0:
+            print(f"Completed: dropped {expected_record_count} nans and interpolated {expected_records_interpolated} nans")
+        else:
+            print(f"Validation Variance: expected ({expected_record_count}) and actual ({dropped_record_count}) record removal vary by {record_removal_diff}")
+            sys.exit(1)
 
 
     # Used for data validation
     def count_store_records(self):
 
         print("Processing: retrieving store_sales data from census.gov")
-        # Get all sales dataframes
-        self.df_store = sales_dfs.GetSalesDF("monthly_sales").df_store_sales
+        # Get store sales dataframes
+        self.df_store = sales_dfs.GetSalesDF("store_sales").df_store_sales
         print("Completed: retrieved store_sales data from census.gov")
 
         self.evals = eval_nans.EvalNames(self.df_store)
-        # Based on evaluation all nans must be dropped, since they are missing multiple years of sales data
-        #   Except 1: cat_code 4422 year 2020 
-        #   Except 2: cat_code 442299 year 2020
-        #   Except 3: cat_code 44811 year 2020
-        # The exceptions above should be interpolated since they are only missing a few months out of the year
-        keep_nans = [("4422", 2020), ("442299", 2020), ("44811", 2020)]
 
         # Notify user of status
-        print(f"Processing: counting number of nan rows except the following cat_codes by year\n{keep_nans}")
+        print(f"Processing: counting number of nan rows")
 
-        count_nan_rows = 0
-
-        for key, df_group in self.evals.dict_df_nans.items():
-            if key not in keep_nans:
-                # Track rows of nans
-                count_nan_rows += 1
+        count_nan_records = self.evals.df_nans_drop.shape[0]
 
         # Notify user
-        print(f"Completed: counted number of nan rows except the following cat_codes by year\n{keep_nans}")
+        print(f"Completed: counted number of nan rows")
 
         # Get number of all records in store_sales including removed nans
         count_all_records = self.df_store.shape[0]        
-        # Number of nan rows are multiplied by 12 since there are 12 months in a year
-        count_nan_records = count_nan_rows * 12
 
         return {"count_all_records":count_all_records, "count_nan_records":count_nan_records}
 

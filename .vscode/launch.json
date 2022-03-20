@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "args": ["-clean"],
+            "args": ["-validate"],
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",

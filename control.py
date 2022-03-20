@@ -27,7 +27,7 @@ if len(sys.argv) > 1:
             manage_db.insert_store_sales()
             sys.exit(0)
         if argument == "-clean":
-           # clean.Clean().get_combined_sales()
+            clean.Clean().get_combined_sales()
             clean.Clean().get_cleaned_store_sales()
             sys.exit(0)
         if argument == "-drop_db":
@@ -40,7 +40,7 @@ if len(sys.argv) > 1:
             manage_db.empty_tables()
             sys.exit(0)
         if argument == "-validate":
-            # validation.validate_record_count()
+            validation.validate_record_count()
             validation.validate_totals()
             sys.exit(0)
         if argument == "-query_combined":

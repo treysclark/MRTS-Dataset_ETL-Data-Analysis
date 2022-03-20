@@ -1,11 +1,17 @@
+import pandas as pd
+
 
 class EvalNames:
     
     def __init__(self, df_store):
         self.df_store = df_store
+        # Some NAICS codes have years worth of missing data (nans > 3) that will be dropped. So, store the corresponding grouped dataframes. 
+        self.df_nans_drop = pd.DataFrame()
+        # However, not all nans (1 < nans < 3) will be dropped, some will be interpreted instead. So, store the corresponding grouped dataframes.
+        self.df_nans_interpolate = pd.DataFrame()
+        # Track number or records that will be interpolated
+        self.count_interpolations = 0
 
-        # Store grouped dataframe with nans greater than zero
-        self.dict_df_nans = {}
         # Store message from show_cat_code_year_nans
         self.msg_cat_code_year_nans = ""
         self.update_cat_code_year_nans()
@@ -51,8 +57,11 @@ class EvalNames:
         for names, df_group in df_store_gk:
 
             nans = df_group.sales.isna().sum()
-            # Only show years that have nans
-            if nans > 0:
+
+            if nans in range(1,4):
+                # NAICS Codes with 1-3 nans per year
+                # which will be interpolated in the clean module
+
                 # Split the two group by keys 
                 cat_code, year = names
 
@@ -72,13 +81,50 @@ class EvalNames:
                     cur_cat_code = cat_code
                     is_non_consec = False
 
-                # Print nans by year if nans are greater than zero
-                self.msg_cat_code_year_nans += f"\n\t\tYear: {year} has {nans} nans"
+                # Print nans by year if nans are between 1-3
+                self.msg_cat_code_year_nans += f"\n\t\tYear: {year} has {nans} nans, Action: interpolate"
 
                 # Track previous year
                 prev_year = year
 
-                # Store grouped dataframe with nans greater than zero
-                self.dict_df_nans[names] = df_group
+                # Append grouped dataframe with 1 - 3 nans
+                # Use apply function to convert group to dataframe
+                self.df_nans_interpolate = self.df_nans_interpolate.append(df_group.apply(lambda x: x))
+                # Track number or records that will be interpolated
+                self.count_interpolations += nans
+            
+            elif nans > 4:
+                # NAICS Codes with at least 4 nans per year, 
+                # which will be dropped from the dataset in the clean module
 
+
+                # Split the two group by keys 
+                cat_code, year = names
+
+                # Check if cat_code has changed
+                is_diff_cat_code = True if cur_cat_code != cat_code else False
+                
+                # Check if nans are from consecutive year
+                is_non_consec = False if prev_year == None else True if prev_year != year - 1 else False
+
+                # Don't print 'nonconsecutive' for change in cat_codes 
+                if is_non_consec and not is_diff_cat_code:
+                    self.msg_cat_code_year_nans += "\n\t\t--nonconsecutive year--"
+
+                # Print cat_code as header
+                if is_diff_cat_code:
+                    self.msg_cat_code_year_nans += f"\n\tCat_code: {cat_code}"
+                    cur_cat_code = cat_code
+                    is_non_consec = False
+
+                # Print nans by year if nans are greater than 3
+                self.msg_cat_code_year_nans += f"\n\t\tYear: {year} has {nans} nans, Action: drop"
+
+                # Track previous year
+                prev_year = year
+
+                # Append grouped dataframe with more than 3 nans
+                # Use apply function to convert group to dataframe
+                self.df_nans_drop = self.df_nans_drop.append(df_group.apply(lambda x: x))
+           
         self.msg_cat_code_year_nans += "\nCompleted: displayed category codes (NAICS) that have missing values (nans) by year"
