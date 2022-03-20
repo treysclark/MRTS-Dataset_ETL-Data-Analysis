@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from time import perf_counter
 
 class GetSalesDF:
     def __init__(self, load_type):
@@ -19,7 +20,22 @@ class GetSalesDF:
             self.load_store_sales_df()
         elif load_type == "annual_sales":
             self.load_total_df()
+
+
+    # Load all sales dataframes
+    def get_all_sales_df(self):
+        # Skip over FY2022, which is in progress. Dataset will be based on 1992 - 2021
+        for sheet_num in range(1, 30):
+            self.cur_year = 2022 - sheet_num
+            # Access Excel sheet from Census.gov website
+            self.df_raw = pd.read_excel("https://www.census.gov/retail/mrts/www/mrtssales92-present.xls", sheet_name=sheet_num)
+            # Get converted combined sales
+            self.df_combined_sales = self.df_combined_sales.append(self.get_combined_df())
+            # Get converted store sales
+            self.df_store_sales = self.df_store_sales.append(self.get_store_df())
         
+        return {'df_combined':self.df_combined_sales, 'df_store':self.df_store_sales, 'df_annual': self.get_totals_df()}
+
 
     # Load combined sales dataframes
     def load_combined_sales_df(self):
@@ -28,7 +44,7 @@ class GetSalesDF:
             self.cur_year = 2022 - sheet_num
             # Access Excel sheet from Census.gov website
             self.df_raw = pd.read_excel("https://www.census.gov/retail/mrts/www/mrtssales92-present.xls", sheet_name=sheet_num)
-            # Get converted retail sales
+            # Get converted combined sales
             self.df_combined_sales = self.df_combined_sales.append(self.get_combined_df())
 
 
@@ -45,6 +61,7 @@ class GetSalesDF:
 
     # Load totals (annual sales) for retail combined sales and store sales dataframes
     def load_total_df(self):
+        start_time = perf_counter()
         print("Processing: retrieving annual sales from census.gov")
         # Skip over FY2022, which is in progress. Dataset will be based on 1992 - 2021
         for sheet_num in range(1, 30):
@@ -56,7 +73,8 @@ class GetSalesDF:
         # Census.gov does not calculate totals for any categories with missing monthly values
         # So, drop those rows from the df Source: https://stackoverflow.com/a/45466263/848353
         self.df_totals.dropna(subset=['annual_sales'], inplace=True)
-        print(f"Completed: retrieved annual sales ({'{:,}'.format(self.df_totals.shape[0])} records) from census.gov")
+        print(f"Completed: retrieved annual sales ({'{:,}'.format(self.df_totals.shape[0])} records) from census.gov in ", round(perf_counter()-start_time,4), " seconds")  
+
 
     # Get retail combined sales
     def get_combined_df(self):

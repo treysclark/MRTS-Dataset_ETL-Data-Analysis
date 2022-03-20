@@ -1,5 +1,6 @@
 import os
 import sys
+from time import perf_counter
 
 import transform.clean as clean
 import load.manage_db as manage_db
@@ -21,10 +22,9 @@ if len(sys.argv) > 1:
         # Call relevant functions based on CLA
         argument = sys.argv[1]
         if argument == "-etl":
-            manage_db.create_db()
-            manage_db.create_tables()
-            manage_db.insert_combined_sales()
-            manage_db.insert_store_sales()
+            start_time = perf_counter()
+            manage_db.insert_all_sales()
+            print(f"Completed: ETL of MRTS dataset in seconds:", round(perf_counter()-start_time,4))    
             sys.exit(0)
         if argument == "-clean":
             clean.Clean().get_combined_sales()
