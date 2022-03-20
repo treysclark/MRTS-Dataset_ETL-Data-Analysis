@@ -77,7 +77,7 @@ class Clean:
         if record_removal_diff == 0:
             print(f"Completed: dropped {expected_record_count} nans and interpolated {expected_records_interpolated} nans")
         else:
-            print(f"Validation Variance: expected ({expected_record_count}) and actual ({dropped_record_count}) record removal vary by {record_removal_diff}")
+            print(f"----Variance: expected ({expected_record_count}) and actual ({dropped_record_count}) record removal vary by {record_removal_diff}")
             sys.exit(1)
 
 
