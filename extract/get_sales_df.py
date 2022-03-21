@@ -73,7 +73,7 @@ class GetSalesDF:
         # Census.gov does not calculate totals for any categories with missing monthly values
         # So, drop those rows from the df Source: https://stackoverflow.com/a/45466263/848353
         self.df_totals.dropna(subset=['annual_sales'], inplace=True)
-        print(f"Completed: retrieved annual sales ({'{:,}'.format(self.df_totals.shape[0])} records) from census.gov in ", round(perf_counter()-start_time,4), " seconds")  
+        print(f"Completed: retrieved annual sales ({'{:,}'.format(self.df_totals.shape[0])} records) from census.gov in ", round(perf_counter()-start_time,4), " seconds.")  
 
 
     # Get retail combined sales

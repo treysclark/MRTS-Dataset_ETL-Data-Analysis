@@ -23,7 +23,7 @@ class Clean:
         dict_all_sales =  sales_dfs.GetSalesDF('all_sales').get_all_sales_df()
         self.df_combined = dict_all_sales['df_combined']
         self.df_store = dict_all_sales['df_store']
-        print("Completed: retrieved all sales data from census.gov in ", round(perf_counter()-start_time,4), " seconds")  
+        print("Completed: retrieved all sales data from census.gov in ", round(perf_counter()-start_time,4), " seconds.")  
 
         # Clean store dataframe
         self.evals = eval_nans.EvalNames(self.df_store)
@@ -41,7 +41,7 @@ class Clean:
             start_time = perf_counter()
             print("Processing: retrieving combined_sales data from census.gov")
             self.df_combined = sales_dfs.GetSalesDF("combined_sales").df_combined_sales
-            print("Completed: retrieved combined_sales data from census.gov in ", round(perf_counter()-start_time,4), " seconds")  
+            print("Completed: retrieved combined_sales data from census.gov in ", round(perf_counter()-start_time,4), " seconds.")  
         return self.df_combined
 
 
@@ -50,7 +50,7 @@ class Clean:
             start_time = perf_counter() 
             print("Processing: retrieving store_sales data from census.gov")
             self.df_store = sales_dfs.GetSalesDF("store_sales").df_store_sales
-            print("Completed: retrieved store_sales data from census.gov in ", round(perf_counter()-start_time,4), " seconds")  
+            print("Completed: retrieved store_sales data from census.gov in ", round(perf_counter()-start_time,4), " seconds.")  
 
         self.evals = eval_nans.EvalNames(self.df_store)
         self.show_store_nans()
@@ -65,7 +65,6 @@ class Clean:
 
     def remove_store_nan_dfs(self):
         start_time = perf_counter()
-
         # Notify user of status
         print(f"Processing: dropping or interpolating all nans")
 
@@ -76,7 +75,8 @@ class Clean:
         # Interpolate grouped nan dataframe then merge with df_store if it has between (1-3) nans per year
         df_interpolated = self.evals.df_nans_interpolate.interpolate()
         # Match the interpolated values with the df_store dataframe based on the same cat_code, cat_name, and sales_date
-        self.df_store = self.df_store.merge(df_interpolated, how='left', left_on=['cat_code', 'cat_name','sales_date'], right_on=['cat_code', 'cat_name','sales_date'])
+        self.df_store = self.df_store.merge(df_interpolated, how='left', left_on=['cat_code', 'cat_name','sales_date'],
+                                            right_on=['cat_code', 'cat_name','sales_date'])
         # Merge the two sales columns into one new column, then drop extra columns
         self.df_store ['sales'] = self.df_store['sales_x'].where(self.df_store['sales_x'].notnull(), self.df_store['sales_y'])    
         self.df_store.drop(['sales_x','sales_y'],axis=1, inplace=True)
@@ -91,8 +91,10 @@ class Clean:
         record_removal_diff = expected_record_count - self.dropped_record_count 
         # Notify user
         if record_removal_diff == 0:
-            print(f"Completed: dropped {expected_record_count} nans and interpolated {expected_records_interpolated} nans in ", round(perf_counter()-start_time,4), " seconds")  
+            print(f"""Completed: dropped {expected_record_count} nans and interpolated {expected_records_interpolated} 
+                        nans in ", round(perf_counter()-start_time,4), " seconds.""")  
         else:
-            print(f"---- Variance: expected ({expected_record_count}) and actual ({self.dropped_record_count}) record removal vary by {record_removal_diff}")
+            print(f"""---- Variance: expected ({expected_record_count}) and actual ({self.dropped_record_count}) 
+                        record removal vary by {record_removal_diff}""")
             sys.exit(1)
 

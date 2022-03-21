@@ -50,8 +50,7 @@ def create_db():
     except Exception as e:
         print("----- Error: mrts database not created -----\n", e) 
         return sys.exit(1)   
-    print("Completed: created mrts database in ", round(perf_counter()-start_time,4), " seconds")  
-
+    print("Completed: created mrts database in ", round(perf_counter()-start_time,4), " seconds.")  
 
 
 def create_tables():
@@ -65,7 +64,6 @@ def create_tables():
         cat_name VARCHAR(500) NOT NULL,
         CONSTRAINT uc_combined_sales UNIQUE (sales_date, sales, cat_name))
         ENGINE=InnoDB;"""
-
     # SQL STMT: Create store sales table
     create_store_sales = """CREATE TABLE IF NOT EXISTS store_sales (
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -75,7 +73,6 @@ def create_tables():
         cat_code VARCHAR(50) NOT NULL,
         CONSTRAINT uc_sales UNIQUE (sales_date, sales, cat_name, cat_code))
         ENGINE=InnoDB;"""
-
     try:
         cursor.execute("USE mrts")
         # Create combined sales table   
@@ -85,7 +82,7 @@ def create_tables():
     except Exception as e:
         print("----- Error: tables not created -----\n", e) 
         return sys.exit(1)  
-    print("Completed: created tables in ", round(perf_counter()-start_time,4), " seconds") 
+    print("Completed: created tables in ", round(perf_counter()-start_time,4), " seconds.") 
 
 
 def insert_all_sales():
@@ -111,7 +108,7 @@ def insert_combined_sales(df_combined):
         except Exception as e:
             print("----- Error: combined_sales not appended ------\n", e) 
             return sys.exit(1)   
-    print(f"Completed: appended combined_sales table in ", round(perf_counter()-start_time,4), " seconds")                                             
+    print(f"Completed: appended combined_sales table in ", round(perf_counter()-start_time,4), " seconds.")                                             
 
 
 def insert_store_sales(df_store): 
@@ -125,7 +122,7 @@ def insert_store_sales(df_store):
         except Exception as e:
             print("----- Error: store_sales not appended -----\n", e) 
             return sys.exit(1)   
-    print(f"Completed: appended store_sales table in ", round(perf_counter()-start_time,4), " seconds") 
+    print(f"Completed: appended store_sales table in ", round(perf_counter()-start_time,4), " seconds.") 
 
 
 def read_combined_sales_count(): 
@@ -139,7 +136,7 @@ def read_combined_sales_count():
     except Exception as e:
         print("----- Error: counting records in combined_sales table -----\n", e) 
         return sys.exit(1)     
-    print("Completed: counting records in combined_sales table in ", round(perf_counter()-start_time,4), " seconds") 
+    print("Completed: counting records in combined_sales table in ", round(perf_counter()-start_time,4), " seconds.") 
     # Return number of records in store_sales table
     return cursor.fetchone()[0]
 
@@ -155,7 +152,7 @@ def read_store_sales_count():
     except Exception as e:
         print("----- Error: counting records in store_sales table -----\n", e) 
         return sys.exit(1) 
-    print("Completed: counting records in store_sales table in ", round(perf_counter()-start_time,4), " seconds") 
+    print("Completed: counting records in store_sales table in ", round(perf_counter()-start_time,4), " seconds.") 
     # Return number of records in store_sales table
     return cursor.fetchone()[0]
 
@@ -170,9 +167,8 @@ def read_calc_annual_sales():
                             UNION
                             SELECT YEAR(sales_date), cat_name, SUM(sales)
                             FROM store_sales
-                            GROUP BY YEAR(sales_date), cat_name
-                        ;"""
-
+                            GROUP BY YEAR(sales_date), cat_name;
+                        """
     try:
         cursor.execute("USE mrts") 
         cursor.execute(calc_annual_sales)
@@ -180,7 +176,7 @@ def read_calc_annual_sales():
         print("----- Error: counting records in store_sales table -----\n", e) 
         return sys.exit(1)  
     result = cursor.fetchall()
-    print(f"Completed: calculated annual sales ({'{:,}'.format(len(result))} records) from all tables in ", round(perf_counter()-start_time,4), " seconds") 
+    print(f"Completed: calculated annual sales ({'{:,}'.format(len(result))} records) from all tables in ", round(perf_counter()-start_time,4), " seconds.") 
     return result
 
 
@@ -194,7 +190,7 @@ def empty_tables():
     except Exception as e:
         print(" ----- Error: tables not emptied -----\n", e) 
         return sys.exit(1)   
-    print("Completed: emptied tables in ", round(perf_counter()-start_time,4), " seconds") 
+    print("Completed: emptied tables in ", round(perf_counter()-start_time,4), " seconds.") 
 
 
 def drop_db():
@@ -205,7 +201,7 @@ def drop_db():
     except Exception as e:
         print("----- Error: mrts database not dropped ------\n", e) 
         return sys.exit(1)   
-    print("Completed: dropped mrts database in in ", round(perf_counter()-start_time,4), " seconds") 
+    print("Completed: dropped mrts database in in ", round(perf_counter()-start_time,4), " seconds.") 
 
 
 def drop_tables():
@@ -218,7 +214,7 @@ def drop_tables():
     except Exception as e:
         print("----- Error: tables not dropped -----\n", e) 
         return sys.exit(1)   
-    print("Completed: dropped tables in ", round(perf_counter()-start_time,4), " seconds") 
+    print("Completed: dropped tables in ", round(perf_counter()-start_time,4), " seconds.") 
 
 
 @atexit.register
