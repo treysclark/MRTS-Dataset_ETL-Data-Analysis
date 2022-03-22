@@ -5,10 +5,10 @@ from time import perf_counter
 import transform.clean as clean
 import load.manage_db as manage_db
 import load.validation as validation
-import analyze.query_combined_sales as query_sales
-import analyze.query_percent_change as query_percent
-import analyze.query_rolling_time_windows as query_rolling
-import analyze.query_trends as query_trends
+from analyze.combined_sales import CombinedSales
+from analyze.percent_change import PercentChange
+from analyze.rolling_time_windows import RollingTimeWindow
+from analyze.trends import Trends
 
 getSalesDF = None
 
@@ -43,20 +43,20 @@ if len(sys.argv) > 1:
             df_all_sales = clean.Clean().get_all_sales()
             validation.validate_all(df_all_sales)
             sys.exit(0)
-        elif argument == "-query_combined":
-            query_sales.QueryCombinedSales().show_reports()
+        elif argument == "-analyze_combined":
+            CombinedSales().show_reports()
             sys.exit(0)
-        elif argument == "-query_percent":
-            query_percent.QueryPercentChange().show_reports()
+        elif argument == "-analyze_percent":
+            PercentChange().show_reports()
             sys.exit(0)
-        elif argument == "-query_rolling":
-            query_rolling.QueryRollingTimeWindow().show_reports()
+        elif argument == "-analyze_rolling":
+            RollingTimeWindow().show_reports()
             sys.exit(0)
-        elif argument == "-query_trends":
-            query_trends.QueryTrends().show_reports()
+        elif argument == "-analyze_trends":
+            Trends().show_reports()
             sys.exit(0)
         else:
             print("""Argument not recognized please use one of the following:
                 -etl, -clean, -drop_db, -drop_tables, -empty_tables, -validate,
-                -query_combined, -query_percent, -query_rolling, -query_trends""")
+                -analyze_combined, -analyze_percent, -analyze_rolling, -analyze_trends""")
 

@@ -61,11 +61,41 @@ It was only necessary to clean the monthly store sales. That process consisted o
 
   - If the store sales have less than four missing monthly sales in a year, then they are interpolated.
 
-    ![Remove nans by group](/images/transform/interpolate-nans.png)
+    ![Interpolate nans by group](/images/transform/interpolate-nans.png)
 
 
-  - Store sales that have multiple years of missing values for multiple months were dropped, since it would be ineffective to interpolate the missing values.
+  - Store sales that have multiple years of missing values for multiple months are dropped, since it would be ineffective to interpolate the missing values.
 
     ![Remove nans by group](/images/transform/drop-nans.png)
 
-## Load
+## Load:
+The load process includes utilizing the MYSQL database and validating that the stored data matched the source dataset.
+
+### Managing MYSQL:
+The MYSQL instance is managed in the following manner:
+- **Connections**: 
+  - **MYSQL Connector**: This library is used for DDL and DQL commands.
+
+    ![MYSQL Connector](/images/load/mysql-connector.png)
+
+  - **SQLAlchemy**: This library is used for DML commands, primarily insert.
+
+    ![MYSQL Connector](/images/load/sqlalchemy.png)
+
+- **DDL Commands**: 
+  - **Create**: In addition to creating the MRTS database, two tables are created to store the combined store sales and individual store sales.
+
+    ![Create Command](/images/load/create.png)
+
+  - **Truncate**: Emptying the tables is helpful when restarting the ETL process.
+
+    ![Truncate Command](/images/load/empty.png)
+
+  - **Drop**: The user has the option of removing the MRTS database or just the tables.
+
+    ![Drop Commands](/images/load/drop.png)
+
+- **DQL Commands**: 
+  - **Read**: These.
+
+    ![Read Command](/images/load/read.png)

@@ -1,78 +1,18 @@
-import sys
-import yaml
-import mysql.connector
+
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
 from statsmodels.tsa.seasonal import seasonal_decompose
+import load.manage_db as manage_db
 
-class QueryCombinedSales:
+class CombinedSales:
 
     def __init__(self):
-        with open("./load/db.yaml", "r") as stream:
-            try:
-                db = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print("---- Error: loading yaml ----\n", exc)
-                sys.exit(1)
-
-        config = {
-            'user':         db['user'],
-            'password':     db['pwrd'],
-            'host':         db['host'],
-            'database':     db['db'],
-            'auth_plugin': 'mysql_native_password'
-        }
-
-        try:
-            self.cnx = mysql.connector.connect(**config)
-            self.cursor = self.cnx.cursor()
-        except Exception as e:
-            print("---- Error: creating mysql connection ----\n", e)
-            sys.exit(1)
-
-        self.df = {}
+        self.df = None
 
 
     def setup_df(self):
-        print("Processing: retrieving data from combined_sales table")
-        # Do not combine by year. Doing so may hide months with empty sales that should be interpolated
-        query = """
-                    SELECT sales_date, CAST(sales AS UNSIGNED)
-                    FROM combined_sales
-                    WHERE cat_name = %s;
-                """
-                
-        # Filter by Kind of Business
-        params = ("Retail and food services sales, total",)
-        try: 
-            self.cursor.execute("USE mrts;")
-            self.cursor.execute(query, params)
-        except Exception as e:
-            print("Error: records not retrieved from combined_sales table\n", e)
-            sys.exit(1)
-
-        sales_date = []
-        sales = []
-
-        # Get DB data
-        for row in self.cursor.fetchall():
-            row_date = row[0]
-            # Convert to datetime, so it can be grouped by years later
-            sales_date.append(datetime(row_date.year, row_date.month, row_date.day))
-            sales.append(row[1])
-
-        print("Completed: retrieved data from combined_sales table")
-
-        # Close connections     
-        self.cursor.close()
-        self.cnx.close()
-
-        # Setup dictionary to hold DB values
-        dict = {"sales_date": sales_date, "sales":sales}
-
         # Create DataFrame and interpolate any possible missing values
-        self.df = pd.DataFrame(dict)
+        self.df = manage_db.read_combined_sales()
         # Check for missing values
         sum_nans = self.df.isna().sum()        
         if sum_nans.sum() == 0:
@@ -85,7 +25,6 @@ class QueryCombinedSales:
         print(nan_msg)
 
 
-
     # Get Monthly Sales 
     def get_monthly(self):
         print("Processing: Monthly Sales")
@@ -94,6 +33,7 @@ class QueryCombinedSales:
         ax.plot(self.df["sales_date"], self.df["sales"])
         plt.gca().set(title="Monthly Retail and Food Services Sales", xlabel="Months", ylabel="Sales")
         print("Completed: Monthly Sales")
+
 
     # Get Annual Sales
     def get_annual(self):
@@ -104,6 +44,7 @@ class QueryCombinedSales:
         ax.plot(df_annual.index, df_annual["sales"])
         plt.gca().set(title="Annual Retail and Food Services Sales", xlabel="Years", ylabel="Sales")
         print("Completed: Annual Sales")
+
 
     # Monthly Sales without Seasonality
     def get_monthly_decompose(self):
@@ -143,6 +84,7 @@ class QueryCombinedSales:
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Monthly Retail and Food Services Sales\n(with multiplicative decompose and 5 month moving averages (5MA))", xlabel="Months", ylabel="Sales")
         print("Completed: Monthly Sales without Seasonality and a 5 Month Moving Average")
+
 
     def show_reports(self):
         self.setup_df()

@@ -1,84 +1,16 @@
-import sys
-import yaml
-import mysql.connector
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from datetime import datetime
+import load.manage_db as manage_db
 
-class QueryPercentChange:
+class PercentChange:
 
     def __init__(self):
-        with open("./load/db.yaml", "r") as stream:
-            try:
-                db = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print("---- Error: loading yaml ----\n", exc)
-                sys.exit(1)
-
-        config = {
-            'user':         db['user'],
-            'password':     db['pwrd'],
-            'host':         db['host'],
-            'database':     db['db'],
-            'auth_plugin': 'mysql_native_password'
-        }
-
-        try:
-            self.cnx = mysql.connector.connect(**config)
-            self.cursor = self.cnx.cursor()
-        except Exception as e:
-            print("---- Error: creating mysql connection ----\n", e)
-            sys.exit(1)
+        self.df = None
 
 
     def setup(self):
-        print("Processing: retrieving data from store_sales table")
-
-        query = """
-                    SELECT 
-                        sales_date,
-                        MAX(CASE WHEN cat_code=%s THEN sales END) as mens_clothing,
-                        MAX(CASE WHEN cat_code=%s THEN sales END) as womens_clothing,
-                        MAX(CASE WHEN cat_code=%s THEN sales END) as all_clothing
-                    FROM store_sales
-                    WHERE sales_date < '2020-01-01'
-                    GROUP BY 1;
-                """
-
-        # Filter by NAICS Codes
-        params = (44811, 44812, 4481)
-        try: 
-            self.cursor.execute("USE mrts;")
-            self.cursor.execute(query, params)
-        except Exception as e:
-            print("Error: records not retrieved from store_sales table\n", e)
-            sys.exit(1)
-
-        sales_date = []
-        mens_clothing = []
-        womens_clothing = []
-        all_clothing = []
-
-        # Get DB data
-        for row in self.cursor.fetchall():
-            d = row[0]
-            # Convert to datetime, so it can be grouped by years later
-            sales_date.append(datetime(d.year, d.month, d.day))
-            # Get sales
-            mens_clothing.append(row[1])
-            womens_clothing.append(row[2])
-            all_clothing.append(row[3])
-        
-        print("Completed: retrieved data from store_sales table")
-
-        # Close connections     
-        self.cursor.close()
-        self.cnx.close()
-        # Setup dictionary to hold DB values
-        dict = {"sales_date": sales_date, "mens_clothing":mens_clothing, "womens_clothing":womens_clothing, "all_clothing":all_clothing}
-        # Create DataFrame 
-        self.df = pd.DataFrame(dict)
+        self.df = manage_db.read_percent_change()
         # Check for missing values
         sum_nans = self.df.isna().sum()        
         if sum_nans.sum() == 0:
@@ -89,6 +21,7 @@ class QueryPercentChange:
             # Interpolate for missing values
             self.df.interpolate(inplace=True)
         print(nan_msg)
+
 
     def get_monthly(self):
         print("Processing: Monthly Sales Percent of Change")
@@ -103,6 +36,7 @@ class QueryPercentChange:
         plt.gca().set(title="Monthly Percent of Change in Clothing Store Sales", xlabel="Months", ylabel="Percent Change")
         print("Completed: Monthly Sales Percent of Change")
 
+
     # Get Annual Sales Percent of Change
     def get_annual_poc(self):
         print("Processing: Annual Sales Percent of Change")
@@ -115,6 +49,7 @@ class QueryPercentChange:
         ax.legend(loc = 'lower left')
         plt.gca().set(title="Annual Percent of Change in Clothing Store Sales", xlabel="Years", ylabel="Percent Change")
         print("Completed: Annual Sales Percent of Change")
+
 
     # Get Annual Sales Percent of Whole
     def get_annual_pow(self):
@@ -134,6 +69,7 @@ class QueryPercentChange:
         plt.gca().set(title="Monthly Clothing Sales as a Percent of Whole", xlabel="Months", ylabel="Percent of Whole")
         print("Completed: Annual Sales Percent of Whole")
 
+
     # Get Annual Sales Percent of Change
     def get_annual_poc(self):
         print("Processing: Annual Sales Percent of Change")
@@ -151,6 +87,7 @@ class QueryPercentChange:
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Annual Clothing Sales as a Percent of Whole", xlabel="Years", ylabel="Percent of Whole")
         print("Completed: Annual Sales Percent of Change")
+
 
     def show_reports(self):
         self.setup()

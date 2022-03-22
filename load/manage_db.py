@@ -4,7 +4,9 @@ import yaml
 import sys
 import mysql.connector
 import atexit
+import pandas as pd
 from time import perf_counter
+from datetime import datetime
 import transform.clean as clean
 import load.validation as validation
 
@@ -176,8 +178,157 @@ def read_calc_annual_sales():
         print("----- Error: counting records in store_sales table -----\n", e) 
         return sys.exit(1)  
     result = cursor.fetchall()
-    print(f"Completed: calculated annual sales ({'{:,}'.format(len(result))} records) from all tables in ", round(perf_counter()-start_time,4), " seconds.") 
+    print(f"Completed: calculated annual sales ({'{:,}'.format(len(result))} records) from all tables in ", 
+            round(perf_counter()-start_time,4), " seconds.") 
     return result
+
+
+def read_combined_sales():
+    start_time = perf_counter()
+    print("Processing: retrieving data from combined_sales table")
+    # Do not combine by year. Doing so may hide months with empty sales that should be interpolated
+    query = """
+                SELECT sales_date, CAST(sales AS UNSIGNED)
+                FROM combined_sales
+                WHERE cat_name = %s;
+            """
+            
+    # Filter by Kind of Business
+    params = ("Retail and food services sales, total",)
+    try: 
+        cursor.execute("USE mrts;")
+        cursor.execute(query, params)
+    except Exception as e:
+        print("---- Error: records not retrieved from combined_sales table\n", e)
+        sys.exit(1)
+
+    sales_date = []
+    sales = []
+    # Get DB data
+    for row in cursor.fetchall():
+        row_date = row[0]
+        # Convert to datetime, so it can be grouped by years later
+        sales_date.append(datetime(row_date.year, row_date.month, row_date.day))
+        sales.append(row[1])
+    # Setup dictionary to hold DB values
+    dict = {"sales_date": sales_date, "sales":sales}
+    print("Completed: retrieved data from combined_sales table in ", round(perf_counter()-start_time,4), " seconds.") 
+    return pd.DataFrame(dict)
+
+
+def read_percent_change():
+    start_time = perf_counter()
+    print("Processing: retrieving data from store_sales table")
+    query = """
+                SELECT 
+                    sales_date,
+                    MAX(CASE WHEN cat_code=%s THEN sales END) as mens_clothing,
+                    MAX(CASE WHEN cat_code=%s THEN sales END) as womens_clothing,
+                    MAX(CASE WHEN cat_code=%s THEN sales END) as all_clothing
+                FROM store_sales
+                WHERE sales_date < '2020-01-01'
+                GROUP BY 1;
+            """
+    # Filter by NAICS Codes
+    params = (44811, 44812, 4481)
+    try: 
+        cursor.execute("USE mrts;")
+        cursor.execute(query, params)
+    except Exception as e:
+        print("---- Error: records not retrieved from store_sales table\n", e)
+        sys.exit(1)
+    sales_date = []
+    mens_clothing = []
+    womens_clothing = []
+    all_clothing = []
+    # Get DB data
+    for row in cursor.fetchall():
+        d = row[0]
+        # Convert to datetime, so it can be grouped by years later
+        sales_date.append(datetime(d.year, d.month, d.day))
+        # Get sales
+        mens_clothing.append(row[1])
+        womens_clothing.append(row[2])
+        all_clothing.append(row[3])
+    print("Completed: retrieved data from store_sales table in ", round(perf_counter()-start_time,4), " seconds.") 
+    # Setup dictionary to hold DB values
+    dict = {"sales_date": sales_date, "mens_clothing":mens_clothing, "womens_clothing":womens_clothing, "all_clothing":all_clothing}
+    return pd.DataFrame(dict)
+
+
+def read_rolling_time():
+    start_time = perf_counter()
+    print("Processing: retrieving data from store_sales table")
+    query = """
+                SELECT 
+                    sales_date,
+                    MAX(CASE WHEN cat_code=%s THEN sales END) as new_cars,
+                    MAX(CASE WHEN cat_code=%s THEN sales END) as used_cars
+                FROM store_sales
+                GROUP BY 1;
+            """
+    # Filter by NAICS Codes
+    params = (44111,44112)
+    try: 
+        cursor.execute("USE mrts;")
+        cursor.execute(query, params)
+    except Exception as e:
+        print("---- Error: records not retrieved from store_sales table\n", e)
+        sys.exit(1)
+    sales_date = []
+    new_cars = []
+    used_cars = []
+    # Get DB data
+    for row in cursor.fetchall():
+        d = row[0]
+        # Convert to datetime, so it can be grouped by years later
+        sales_date.append(datetime(d.year, d.month, d.day))
+        # Get sales
+        new_cars.append(row[1])
+        used_cars.append(row[2])
+    print("Completed: retrieved data from store_sales table in ", round(perf_counter()-start_time,4), " seconds.") 
+    # Setup dictionary to hold DB values
+    dict = {"sales_date": sales_date, "new_cars":new_cars, "used_cars":used_cars}
+    return pd.DataFrame(dict)
+
+
+def read_trends():
+    start_time = perf_counter()
+    print("Processing: retrieving data from store_sales table")
+    query = """
+                SELECT 
+                    sales_date,
+                    MAX(CASE WHEN cat_code=%s THEN sales END) as sport_sales,
+                    MAX(CASE WHEN cat_code=%s THEN sales END) as hobby_sales,
+                    MAX(CASE WHEN cat_code=%s THEN sales END) as book_sales
+                FROM store_sales
+                GROUP BY 1;
+            """
+    # Filter by NAICS Codes
+    params = (45111, 45112, 451211)
+    try: 
+        cursor.execute("USE mrts;")
+        cursor.execute(query, params)
+    except Exception as e:
+        print("---- Error: records not retrieved from store_sales table\n", e)
+        sys.exit(1)
+    sales_date = []
+    sport_sales = []
+    hobby_sales = []
+    book_sales = []
+    # Get DB data
+    for row in cursor.fetchall():
+        d = row[0]
+        # Convert to datetime, so it can be grouped by years later
+        sales_date.append(datetime(d.year, d.month, d.day))
+        # Get sales
+        sport_sales.append(row[1])
+        hobby_sales.append(row[2])
+        book_sales.append(row[3])
+    print("Completed: retrieved data from store_sales table in ", round(perf_counter()-start_time,4), " seconds.") 
+    # Setup dictionary to hold DB values
+    dict = {"sales_date": sales_date, "sport_sales":sport_sales, "hobby_sales":hobby_sales, "book_sales":book_sales}
+    return pd.DataFrame(dict)
 
 
 def empty_tables():

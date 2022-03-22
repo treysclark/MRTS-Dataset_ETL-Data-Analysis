@@ -1,77 +1,16 @@
-import sys
-import yaml
-import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
 from statsmodels.tsa.seasonal import seasonal_decompose
 
-class QueryRollingTimeWindow:
+import load.manage_db as manage_db
+
+class RollingTimeWindow:
 
     def __init__(self):
-        with open("./load/db.yaml", "r") as stream:
-            try:
-                db = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print("---- Error: loading yaml ----\n", exc)
-                sys.exit(1)
-
-        config = {
-            'user':         db['user'],
-            'password':     db['pwrd'],
-            'host':         db['host'],
-            'database':     db['db'],
-            'auth_plugin': 'mysql_native_password'
-
-        }
-
-        try:
-            self.cnx = mysql.connector.connect(**config)
-            self.cursor = self.cnx.cursor()
-        except Exception as e:
-            print("---- Error: creating mysql connection ----\n", e)
-            sys.exit(1)
+        self.df = None
 
     def setup(self):
-        print("Processing: retrieving data from store_sales table")
-        query = """
-                    SELECT 
-                        sales_date,
-                        MAX(CASE WHEN cat_code=%s THEN sales END) as new_cars,
-                        MAX(CASE WHEN cat_code=%s THEN sales END) as used_cars
-                    FROM store_sales
-                    GROUP BY 1
-                ;"""
-
-        # Filter by NAICS Codes
-        params = (44111,44112)
-        try: 
-            self.cursor.execute("USE mrts;")
-            self.cursor.execute(query, params)
-        except Exception as e:
-            print("Error: records not retrieved from store_sales table\n", e)
-            sys.exit(1)
-
-        sales_date = []
-        new_cars = []
-        used_cars = []
-
-        # Get DB data
-        for row in self.cursor.fetchall():
-            d = row[0]
-            # Convert to datetime, so it can be grouped by years later
-            sales_date.append(datetime(d.year, d.month, d.day))
-            # Get sales
-            new_cars.append(row[1])
-            used_cars.append(row[2])
-        print("Completed: retrieved data from store_sales table")
-        # Close connections     
-        self.cursor.close()
-        self.cnx.close()
-        # Setup dictionary to hold DB values
-        dict = {"sales_date": sales_date, "new_cars":new_cars, "used_cars":used_cars}
-        # Create DataFrame and interpolate missing values
-        self.df = pd.DataFrame(dict)
+        self.df = manage_db.read_rolling_time()
         # Check for missing values
         sum_nans = self.df.isna().sum()        
         if sum_nans.sum() == 0:
