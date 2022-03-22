@@ -96,6 +96,17 @@ The MYSQL instance is managed in the following manner:
     ![Drop Commands](/images/load/drop.png)
 
 - **DQL Commands**: 
-  - **Read**: These.
+  - **Read**: These commands are used in the data validation process. There are other read commands that are discussed in the analysis section.
 
     ![Read Command](/images/load/read.png)
+
+- **DML Commands**: 
+  - **Insert**: SQLAlchemy is used to quickly insert batches of records from the transformed DataFrames directly into MYSQL.
+
+    ![Insert Command](/images/load/insert.png)
+    
+### Validation:
+The accurracy of the database is validated by record count and annual sales.
+- **Record Count**: 
+
+- **Annual Sales**: 
