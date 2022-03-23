@@ -107,6 +107,16 @@ The MYSQL instance is managed in the following manner:
     
 ### Validation:
 The accurracy of the database is validated by record count and annual sales.
-- **Record Count**: 
 
-- **Annual Sales**: 
+- **Record Count**: These functions compare the number of records inserted into the database to the number of monthly sales in the source data. Comparisons are made on the following two categories:
+    -  **Combined Sales**: 
+        ![Validate Combined Sales](/images/load/validate-combined-sales.png)
+        
+    -  **Store Sales**: 
+        ![Validate Store Sales](/images/load/validate-store-sales.png)
+
+- **Annual Sales**: The MRTS source dataset calculates the annual totals per year for each combined sale and store. These sums are labeled either as "Total" or "CY" for cummulative total. However, if a store has any missing values it's annual total is not calculated in the source dataset. So, the validation of annual sales does not take these rows missing values into account. This should not be a problem because some of the source dataset when grouped by year and NAICS code are missing a significant amount of consecutive monthly sales, which are dropped during the transformation process. 
+    ![Validate Totals](/images/load/validate-totals.png) 
+
+The user is notified if the validation process identifies any variances between the source dataset and the database records.
+![Validation Msg](/images/load/validation-msg.png) 
