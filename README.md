@@ -120,3 +120,41 @@ The accurracy of the database is validated by record count and annual sales.
 
 The user is notified if the validation process identifies any variances between the source dataset and the database records.
 ![Validation Msg](/images/load/validation-msg.png) 
+
+## Analysis:
+The main focus of this project was on the ETL workflow. However some analysis was done as well, which consists of the following:
+
+### Trends: 
+The following section analyzes the economic trends found in some of the results. Economic trends are various indicators that show the financial health of a region or country. These trends are analyzed by various professionals. A few examples of why these trends are monitored are as follows [6]:
+
+- Identifying the level of productivity
+- Develop forecasts
+- Evaluate regulatory requirements
+- Identify business market share
+- Analyze business potential
+- Plan investments
+
+#### Retail and Food Services Sales: 
+- Analysis of the retail and food services category from 1992 to 2020 shows an upward trend in sales. There was a significant disruption to that upward trend in the aftermath of the 2007-2008 financial crisis, which preceded the Great Recession.
+
+    - When using the monthly data, the trend becomes slightly hidden by seasonal variances. Monthly data can be smoothed by removing the seasonality from the data and optionally applying a moving average.
+    
+    ![Monthly Retail Sales](/images/analysis/monthly-combined.png)
+    
+    - However, the trend can be seen clearly when aggregating monthly sales to annual.
+    
+    ![Annual Combined Sales](/images/analysis/annual-combined.png) 
+    
+
+### Percent of Change:
+    ![Percent of Change](/images/analysis/percent-change.png) 
+    
+### Rolling Time Windows: 
+    ![Rolling Time Windows](/images/analysis/rolling-time.png) 
+    
+
+    
+    
+    
+    
+    
