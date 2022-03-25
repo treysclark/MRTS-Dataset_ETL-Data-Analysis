@@ -221,9 +221,9 @@ The control module manages all of the workflows for this project. Users can exec
 The goal of the project was achieved. Users of the script can execute the whole ETL pipeline by including the "-etl" argument. 
 
 Future iterations of this project will allow the user to do the following:
-    - Enter a starting and ending year to limit the amount of data processed. Or, since the dataset is pulled directly from the US Census Bureau's website, end year can be used to gather the most recently completed sales data. 
-    - Enter the NAICS codes to run analysis on instead of using hard-coded values. 
-    - An option will be given to allow the user to save charts to a folder instead of automatically displaying them.
+- Enter a starting and ending year to limit the amount of data processed. Or, since the dataset is pulled directly from the US Census Bureau's website, end year can be used to gather the most recently completed sales data. 
+- Enter the NAICS codes to run analysis on instead of using hard-coded values. 
+- An option will be given to allow the user to save charts to a folder instead of automatically displaying them.
 
 ## References
 1. Brownlee, J. (2020, December 9). How to decompose time series data into trend and seasonality. Machine Learning Mastery. Retrieved January 22, 2022, from https://machinelearningmastery.com/decompose-time-series-data-trend-seasonality/
