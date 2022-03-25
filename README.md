@@ -162,9 +162,9 @@ The following section analyzes the economic trends found in some of the results.
 
 ### Percent of Change:
 
-- The following analysis uses Pandas' Percent Change function. Percent of change is a mathematical formula for calculating the degree of change over time. Percentage of change is important for predicting spending patterns because it informs companies on how much to produce in the future. For example, exercise equipment manufacturer Peloton suffered significant damage to its stock price when it was reported that its production far exceeded consumer demand [7]. Timely forecasting is especially needed for companies who rely on Just-In-Time manufacturing. Companies that have lean inventories need to know when demand changes dramatically.
+- The following analysis uses Pandas' Percent Change function to evaluate sales data from the men's and women's clothing stores. Percent of change is a mathematical formula for calculating the degree of change over time. Percentage of change is important for predicting spending patterns because it informs companies on how much to produce in the future. For example, exercise equipment manufacturer Peloton suffered significant damage to its stock price when it was reported that its production far exceeded consumer demand [7]. Timely forecasting is especially needed for companies who rely on Just-In-Time manufacturing. Companies that have lean inventories need to know when demand changes dramatically.
 
-The following percent of change analysis uses sales data from men's and women's clothing stores. The analysis shows that both types of clothing stores are subject to the same market forces.
+- The analysis shows that both types of clothing stores are subject to the same market forces.
 
     ![Percent of Change Monthly](/images/analysis/percent-change-monthly.png)
     
@@ -193,9 +193,56 @@ The following percent of change analysis uses sales data from men's and women's 
          
         ![Rolling Time Windows 5MA Cars](/images/analysis/rolling-time-5ma.png) 
     
+    
+## Control:
+The control module manages all of the workflows for this project. Users can execute one of ten commands by adding command line arguments during the execution of the script. The commands are as follows:
+    - -etl
+        - Run the complete extract, transform, load (including data validation) workflow
+        ![ETL Argument](/images/control/etl-argument.png) 
+    - -clean
+        - Retrieve the data and transform the store sales
+        ![Clean Argument](/images/control/clean-argument.png) 
+    - -drop_db
+        - Delete the MRTS database from MYSQL
+        ![Drop DB Argument](/images/control/drop-db-argument.png) 
+    - -drop_tables
+        - Delete the MRTS database tables (combined_sales and store_sales) from MYSQL
+        ![Drop Tables Argument](/images/control/drop-tables-argument.png) 
+    - -empty_tables
+        - Truncate (empty the MRTS database tables (combined_sales and store_sales) from MYSQL while maintaining the table structure
+        ![Empty Tables Argument](/images/control/empty-tables-argument.png) 
+    - -validate
+        - Verify that the record count and annual totals between the source dataset (Census.gov) and the MYSQL database match 
+        ![Validate Argument](/images/control/validate-argument.png) 
+    - -analyze_combined
+        - Retrieve charts 
+        ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+    - -analyze_combined
+        - Retrieve charts 
+        ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+    - -analyze_combined
+        - Retrieve charts 
+        ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+    - -analyze_combined
+        - Retrieve charts 
+        ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+        
+## Conclusion:
 
-    
-    
-    
-    
-    
+
+## References
+1. Brownlee, J. (2020, December 9). How to decompose time series data into trend and seasonality. Machine Learning Mastery. Retrieved January 22, 2022, from https://machinelearningmastery.com/decompose-time-series-data-trend-seasonality/
+
+2. Falardeau, E., Glynn, J., & Ostromecka, O. (2021, June 22). Sweating for the fitness consumer. Our Insights. Retrieved January 22, 2022, from https://www.mckinsey.com/industries/consumer-packaged-goods/our-insights/sweating-for-the-fitness-consumer
+
+3. Federal Reserve Bank of Dallas. (n.d.). Smoothing Data with Moving Averages. Dallasfed.org. Retrieved January 22, 2022, from https://www.dallasfed.org/research/basics/moving.aspx#:~:text=Economists%20use%20a%20simple%20smoothing,average%20of%20several%20months'%20data.
+
+4. Mitchell, T. (2017, June 13). Managing bad data in ETL. Tim Mitchell. Retrieved January 22, 2022, from https://www.timmitchell.net/post/2017/02/16/managing-bad-data-in-etl/
+
+5. PennState. (n.d.). 5.1 decomposition models: Stat 510. PennState: Statistics Online Courses. Retrieved January 22, 2022, from https://online.stat.psu.edu/stat510/lesson/5/5.1
+
+6. Prabhakaran, S. (2021, December 19). Time series analysis in python - A comprehensive guide with examples - ML+. Machine Learning Plus. Retrieved January 22, 2022, from https://www.machinelearningplus.com/time-series/time-series-analysis-python/
+
+7. Thomas, L. (2022, January 21). Peloton to halt production of its bikes, Treadmills as demand wanes. CNBC. Retrieved January 23, 2022, from https://www.cnbc.com/2022/01/20/peloton-to-pause-production-of-its-bikes-treadmills-as-demand-wanes.html
+
+8. US Census Bureau: Rob Swartz (SSSD Division Security Coordinator), P. B. (S. S. S. D. (2009, January 16). US Census Bureau Retail Trade Monthly Retail Trade Survey Methodology Page. United States Census Bureau. Retrieved January 22, 2022, from https://www.census.gov/retail/mrts/how_surveys_are_collected.html
