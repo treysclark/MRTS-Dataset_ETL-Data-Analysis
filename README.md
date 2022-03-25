@@ -1,12 +1,12 @@
 # ETL MRTS Data Analysis
 
-The goal of this project was to analyze the "Monthly Retail Trade Survey" dataset from the U.S. Census Bureau. Then present that analysis using data visualization tools. The following report will present the findings and the steps taken from start to finish. The steps included the following:
+The goal of this project was to create a ETL pipeline of the "Monthly Retail Trade Survey" dataset from the U.S. Census Bureau. Then analyze the data using data visualization tools. The following report will present the findings and the steps taken from start to finish. The steps included the following:
 
 - Researching information about the dataset, such as the meaning of NAICS codes and the data gathering process
 - Extracting the dataset from an Excel workbook hosted on the U.S. Census website
-- Transforming the dataset so that extraneous columns and rows were excluded, coded values were translated, and disaggregated some rows, creating schemas and installation scripts
+- Transforming the dataset so that extraneous columns and rows were excluded and missing values were either dropped or interpolated
 - Loading the dataset into separate MYSQL tables, validating completeness and accuracy with source files
-- Querying the database using conditionals such "CASE" and "WHERE" statements, aggregating by
+- Querying the database using unions and conditionals such as "CASE" and "WHERE" statements, and aggregating columns
 - Examining trends, percentage of changes, and rolling time trends
 - Implementing smoothing techniques such as removing seasonality and using moving averages
 - Creating plots that compared different variables for different periods
@@ -196,39 +196,34 @@ The following section analyzes the economic trends found in some of the results.
     
 ## Control:
 The control module manages all of the workflows for this project. Users can execute one of ten commands by adding command line arguments during the execution of the script. The commands are as follows:
-    - -etl
-        - Run the complete extract, transform, load (including data validation) workflow
-        ![ETL Argument](/images/control/etl-argument.png) 
-    - -clean
-        - Retrieve the data and transform the store sales
-        ![Clean Argument](/images/control/clean-argument.png) 
-    - -drop_db
-        - Delete the MRTS database from MYSQL
-        ![Drop DB Argument](/images/control/drop-db-argument.png) 
-    - -drop_tables
-        - Delete the MRTS database tables (combined_sales and store_sales) from MYSQL
-        ![Drop Tables Argument](/images/control/drop-tables-argument.png) 
-    - -empty_tables
-        - Truncate (empty the MRTS database tables (combined_sales and store_sales) from MYSQL while maintaining the table structure
-        ![Empty Tables Argument](/images/control/empty-tables-argument.png) 
-    - -validate
-        - Verify that the record count and annual totals between the source dataset (Census.gov) and the MYSQL database match 
-        ![Validate Argument](/images/control/validate-argument.png) 
-    - -analyze_combined
-        - Retrieve charts 
-        ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
-    - -analyze_combined
-        - Retrieve charts 
-        ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
-    - -analyze_combined
-        - Retrieve charts 
-        ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
-    - -analyze_combined
-        - Retrieve charts 
-        ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+- "**-etl**" Run the complete extract, transform, load (including data validation) workflow
+    ![ETL Argument](/images/control/etl-argument.png) 
+- "**-clean**" Retrieve the data and transform the store sales
+     ![Clean Argument](/images/control/clean-argument.png) 
+- "**-drop_db**" Delete the MRTS database from MYSQL
+     ![Drop DB Argument](/images/control/drop-db-argument.png) 
+- "**-drop_tables**" Delete the MRTS database tables (combined_sales and store_sales) from MYSQL
+     ![Drop Tables Argument](/images/control/drop-tables-argument.png) 
+- "**-empty_tables**" Truncate (empty the MRTS database tables (combined_sales and store_sales) from MYSQL while maintaining the table structure
+     ![Empty Tables Argument](/images/control/empty-tables-argument.png) 
+- "**-validate**" Verify that the record count and annual totals between the source dataset (Census.gov) and the MYSQL database match 
+     ![Validate Argument](/images/control/validate-argument.png) 
+- "**-analyze_combined**" Retrieve charts 
+     ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+- "**-analyze_combined**" Retrieve charts 
+     ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+- "**-analyze_combined**" Retrieve charts 
+     ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+- "**-analyze_combined**" Retrieve charts 
+     ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
         
 ## Conclusion:
+The goal of the project was achieved. Users of the script can execute the whole ETL pipeline by including the "-etl" argument. 
 
+Future iterations of this project will allow the user to do the following:
+    - Enter a starting and ending year to limit the amount of data processed. Or, since the dataset is pulled directly from the US Census Bureau's website, end year can be used to gather the most recently completed sales data. 
+    - Enter the NAICS codes to run analysis on instead of using hard-coded values. 
+    - An option will be given to allow the user to save charts to a folder instead of automatically displaying them.
 
 ## References
 1. Brownlee, J. (2020, December 9). How to decompose time series data into trend and seasonality. Machine Learning Mastery. Retrieved January 22, 2022, from https://machinelearningmastery.com/decompose-time-series-data-trend-seasonality/
