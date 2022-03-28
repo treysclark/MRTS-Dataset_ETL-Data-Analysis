@@ -1,5 +1,17 @@
 # ETL MRTS Data Analysis
 
+## Table of Contents
+1. [Overview](#overview)
+2. [Data Exploration](#data-exploration)
+3. [Extract](#extract)
+4. [Transform](#transform)
+5. [Load](#load)
+6. [Analyze](#analyze)
+7. [Control](#control)
+8. [Conclusion](#conclusion)
+9. [References](#references)
+
+## Overview:
 The goal of this project was to create a ETL pipeline of the "Monthly Retail Trade Survey" dataset from the U.S. Census Bureau. Then analyze the data using data visualization tools. The following report will present the findings and the steps taken from start to finish. The steps included the following:
 
 - Researching information about the dataset, such as the meaning of NAICS codes and the data gathering process
@@ -23,7 +35,7 @@ The goal of the survey is to provide timely information about retail and food se
 The MRTS utilizes the North American Industry Classification System (NAICS), the standard used by Federal statistical agencies to classify business establishments. MRTS includes retailers who sell through brick-and-mortar stores, paper and or electronic solicitation, door to door, infomercials, vending machines, e-commerce, etc.
 
 
-## Extraction:
+## Extract:
 The MRTS dataset was accessed from the [U.S. Census website](https://www.census.gov/retail/index.html). The raw dataset is in the form of an Excel Workbook, where annual sales are separated into separate sheets. The ETL workflow will only gather sales from 1992 to 2021, since 2022 is still in progress at the time of this writing.
 
 ![Example of Excel dataset](/images/extract/dataset.png)
@@ -121,7 +133,7 @@ The accurracy of the database is validated by record count and annual sales.
 The user is notified if the validation process identifies any variances between the source dataset and the database records.
 ![Validation Msg](/images/load/validation-msg.png) 
 
-## Analysis:
+## Analyze:
 The main focus of this project was on the ETL workflow. However some analysis was done as well, which consists of the following:
 
 ### Trends: 
