@@ -139,25 +139,30 @@ The following section analyzes the economic trends found in some of the results.
 
     - When using the monthly data, the trend becomes slightly hidden by seasonal variances. 
     
-    ![Monthly Combined Sales](/images/analysis/monthly-combined.png)
+    ![Monthly Combined Sales](/images/analyze/trends/monthly-combined.png)
+    ![Monthly Combined Sales Code](/images/analyze/trends/monthly-combined-code.png)
     
     - Monthly data can be smoothed by removing the seasonality from the data.
 
-    ![Monthly Combined Sales w/o Seasonality](/images/analysis/monthly-combined-decompose.png)
+    ![Monthly Combined Sales w/o Seasonality](/images/analyze/trends/monthly-combined-decompose.png)
+    ![Monthly Combined Sales w/o Seasonality Code](/images/analyze/trends/monthly-combined-decompose-code.png)
     
     - The trend can also be seen clearly when aggregating monthly sales to annual sales.
     
-    ![Annual Combined Sales](/images/analysis/annual-combined.png) 
+    ![Annual Combined Sales](/images/analyze/trends/annual-combined.png) 
+    ![Annual Combined Sales Code](/images/analyze/trends/annual-combined-code.png) 
 
 #### Bookstores, Sporting Goods Stores, and Hobbies, Toys, and Games Stores
 - When comparing businesses like bookstores, sporting goods stores, and hobbies, toys, and games stores, it is clear from the charts that sporting goods stores have the highest trend. It grew faster than any other category, especially in the year 2020. That is not surprising since according to McKinsey and Company, there was a significant increase in home gym spending during the initial coronavirus outbreak [2]. However, it is surprising that bookstores began a downward trend during that same time when a large part of the population was staying home. It is hard to believe that online book sales did not increase. However, these sales are likely lumped into the business category, "Electronic shopping and mail-order houses," if the book stores have a separate fulfillment location than their brick-and-mortar stores [7].
 
-    ![Monthly Book, Sports, Toys Sales](/images/analysis/monthly-book-sports-toys.png)
+    ![Monthly Book, Sports, Toys Sales](/images/analyze/trend_comparisons/monthly.png)
+    ![Monthly Book, Sports, Toys Sales Code](/images/analyze/trend_comparisons/monthly-code.png)
     
 
 - There is significant seasonality in these categories of store sales when looking at monthly data. That is especially true for sporting goods stores and hobbies, toys, and games stores. As a result, it is easier to see trends by aggregating the monthly sales to annual. Trends could also be easier to see using the smoothing techniques mentioned in the analysis of the retail and food services category.
 
-    ![Annual Book, Sports, Toys Sales](/images/analysis/annual-book-sports-toys.png) 
+    ![Annual Book, Sports, Toys Sales](/images/analyze/trend_comparisons/annual.png) 
+    ![Annual Book, Sports, Toys Sales Code](/images/analyze/trend_comparisons/annual-code.png) 
 
 
 ### Percent of Change:
@@ -166,13 +171,19 @@ The following section analyzes the economic trends found in some of the results.
 
 - The analysis shows that both types of clothing stores are subject to the same market forces.
 
-    ![Percent of Change Monthly](/images/analysis/percent-change-monthly.png)
+    ![Percent of Change Monthly](/images/analyze/percent_change/poc-monthly.png)
+    ![Percent of Change Monthly Code](/images/analyze/percent_change/poc-monthly-code.png)
     
-    ![Percent of Change Annual](/images/analysis/percent-change-annual.png)
+    ![Percent of Change Annual](/images/analyze/percent_change/poc-annual.png)
+    ![Percent of Change Annual Code](/images/analyze/percent_change/poc-annual-code.png)
     
 - When comparing the men's and women's clothing stores' percentage of contribution to the whole clothing industry, it is clear that women's clothing stores have dominated sales since 1992 and likely before then as well. Women's clothing stores represented about 37% of clothing sales in 1992 and decreased to about 20% in 2019. Meanwhile, men's clothing only represented about 12% of clothing sales in 1992 and about 5% in 2019.
 
-    ![Percent of Whole Monthly](/images/analysis/percent-whole-monthly.png)
+    ![Percent of Whole Monthly](/images/analyze/percent_change/pow-monthly.png)
+    ![Percent of Whole Monthly Code](/images/analyze/percent_change/pow-monthly-code.png)
+    
+    ![Percent of Whole Annual](/images/analyze/percent_change/pow-annual.png)
+    ![Percent of Whole Annual Code](/images/analyze/percent_change/pow-annual-code.png)
     
 ### Rolling Time Windows: 
 
@@ -181,41 +192,69 @@ The following section analyzes the economic trends found in some of the results.
     - It is important to remember there is a trade-off in smoothing data. While larger the moving averages make the data less volatile it decreases its timeliness. However, other moving averages can be used to offset the loss of timeliness, such as weighted moving averages or a centered moving average.
 
     - The following analysis compares new and used car dealer sales. The charts below show the results of monthly new and used car dealer sales with and without various rolling time windows.
-
-    - **3 Month Moving Average**:
-        - The first chart shows the monthly car sales with only a 3-month moving average applied. This increases the smoothness of the chart, but also reduces its timeliness.
-    
-        ![Rolling Time Windows 3MA Cars](/images/analysis/rolling-time-3ma.png) 
-    
-    
+    - **Monthly Sales - No Smoothing**:
+        -  The first chart shows the monthly car sales without using monthly moving averages.
+        
+        ![Car Sales](/images/analyze/rolling_time/monthly.png) 
+        ![Car Sales Code](/images/analyze/rolling_time/monthly-code.png) 
+        
+        
     - **5 Month Moving Average**:
-        - The second chart shows the monthly car sales with a 5-month moving average applied. The 5-month time period could have been extended to 12 months to further smooth the data. However, that would further reduce the timeliness of the data [3].
+        - This chart shows the monthly car sales with only a 5-month moving average applied. This increases the smoothness of the chart, but also reduces its timeliness.
+    
+        ![Rolling Time Windows 5MA Cars](/images/analyze/rolling_time/monthly-5MA.png) 
+        ![Rolling Time Windows 5MA Cars Code](/images/analyze/rolling_time/monthly-5MA-code.png) 
+    
+    
+    - **12 Month Moving Average**:
+        - The last chart shows the monthly car sales with a 12-month moving average applied. The 12-month time period could has successfully smoothed the data. However, it has also further reduce the timeliness of the data [3].
          
-        ![Rolling Time Windows 5MA Cars](/images/analysis/rolling-time-5ma.png) 
+        ![Rolling Time Windows 12MA Cars](/images/analyze/rolling_time/monthly-12MA.png) 
+        ![Rolling Time Windows 12MA Cars Code](/images/analyze/rolling_time/monthly-12MA-code.png) 
     
     
 ## Control:
 The control module manages all of the workflows for this project. Users can execute one of ten commands by adding command line arguments during the execution of the script. The commands are as follows:
+
 - "**-etl**" Run the complete extract, transform, load (including data validation) workflow
+    
     ![ETL Argument](/images/control/etl-arg.png) 
+    
 - "**-clean**" Retrieve the data and transform the store sales
+     
      ![Clean Argument](/images/control/clean-arg.png) 
+     
 - "**-drop_db**" Delete the MRTS database from MYSQL
+     
      ![Drop DB Argument](/images/control/drop-db-arg.png) 
+     
 - "**-drop_tables**" Delete the MRTS database tables (combined_sales and store_sales) from MYSQL
+     
      ![Drop Tables Argument](/images/control/drop-tables-arg.png) 
 - "**-empty_tables**" Truncate (empty the MRTS database tables (combined_sales and store_sales) from MYSQL while maintaining the table structure
+     
      ![Empty Tables Argument](/images/control/empty-tables-arg.png) 
+     
 - "**-validate**" Verify that the record count and annual totals between the source dataset (Census.gov) and the MYSQL database match 
+     
      ![Validate Argument](/images/control/validate-arg.png) 
-- "**-analyze_combined**" Retrieve charts 
-     ![Analyze Combined Argument](/images/control/analyze-trends-arg.png) 
-- "**-analyze_combined**" Retrieve charts 
-     ![Analyze Combined Argument](/images/control/analyze-trend-comparison-arg.png) 
-- "**-analyze_combined**" Retrieve charts 
-     ![Analyze Combined Argument](/images/control/analyze-percent-change-arg.png) 
-- "**-analyze_combined**" Retrieve charts 
-     ![Analyze Combined Argument](/images/control/analyze-rolling-time-arg.png) 
+     
+- "**-analyze_trends**" Retrieve charts which compare monthly and annual sales data with and without seasonality 
+     
+     ![Analyze Trends Argument](/images/control/trends-arg.png) 
+     
+- "**-analyze_trend_comparisons**" Display charts which compare different store sales trends
+     
+     ![Analyze Trend Comparisons Argument](/images/control/trend-comparisons-arg.png)
+     
+- "**-analyze_percent**" Show charts that show percent change and percent whole calculations
+     
+     ![Analyze Percent Argument](/images/control/percent-arg.png) 
+     
+- "**-analyze_rolling**" Retrieve charts with moving averages
+     
+     ![Analyze Rolling Argument](/images/control/rolling-arg.png) 
+     
         
 ## Conclusion:
 The goal of the project was achieved. Users of the script can execute the whole ETL pipeline by including the "-etl" argument. 
