@@ -111,6 +111,6 @@ class EvalNames:
                 # Append grouped dataframe with more than 3 nans
                 # Use apply function to convert group to dataframe
                 self.df_nans_drop = self.df_nans_drop.append(df_group.apply(lambda x: x))
-        self.msg_cat_code_year_nans += f"""\nCompleted: displayed category codes (NAICS) 
-                                            that have missing values (nans) by year
-                                            in {round(perf_counter()-start_time,4)} seconds"""
+        self.msg_cat_code_year_nans += f"\nCompleted: displayed category codes (NAICS)" + \
+                                        " that have missing values (nans) by year in" + \
+                                       f" {round(perf_counter()-start_time,4)} seconds"

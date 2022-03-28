@@ -23,7 +23,7 @@ class PercentChange:
         print(nan_msg)
 
 
-    def get_monthly(self):
+    def get_monthly_poc(self):
         print("Processing: Monthly Sales Percent of Change")
         # Get Monthly Sales Percent of Change
         # Set index, calculate percent of change
@@ -51,9 +51,9 @@ class PercentChange:
         print("Completed: Annual Sales Percent of Change")
 
 
-    # Get Annual Sales Percent of Whole
-    def get_annual_pow(self):
-        print("Processing: Annual Sales Percent of Whole")
+    # Get Monthly Sales Percent of Whole
+    def get_monthly_pow(self):
+        print("Processing: Monthly Sales Percent of Whole")
         # Create a separate copy of dataframe
         df_PoW = self.df.copy(deep=True)
         # Calculate percent of whole
@@ -70,9 +70,9 @@ class PercentChange:
         print("Completed: Annual Sales Percent of Whole")
 
 
-    # Get Annual Sales Percent of Change
-    def get_annual_poc(self):
-        print("Processing: Annual Sales Percent of Change")
+    # Get Annual Sales Percent of Whole
+    def get_annual_pow(self):
+        print("Processing: Annual Sales Percent of Whole")
         # Group by year while settting index
         df_annual_PoW = self.df.groupby(pd.Grouper(key='sales_date', freq='Y')).sum()
         # Calculate percent of whole
@@ -86,15 +86,15 @@ class PercentChange:
         ax.plot(df_annual_PoW.index, df_annual_PoW["womens_clothing"], label="Women's")
         ax.legend(loc = 'upper left')
         plt.gca().set(title="Annual Clothing Sales as a Percent of Whole", xlabel="Years", ylabel="Percent of Whole")
-        print("Completed: Annual Sales Percent of Change")
+        print("Completed: Annual Sales Percent of Whole")
 
 
     def show_reports(self):
         self.setup()
-        self.get_monthly()
+        self.get_monthly_poc()
         self.get_annual_poc()
+        self.get_monthly_pow()
         self.get_annual_pow()
-        self.get_annual_poc()
         # Draw all plots
         plt.show()
 

@@ -91,8 +91,9 @@ class Clean:
         record_removal_diff = expected_record_count - self.dropped_record_count 
         # Notify user
         if record_removal_diff == 0:
-            print(f"""Completed: dropped {expected_record_count} nans and interpolated {expected_records_interpolated} 
-                        nans in ", round(perf_counter()-start_time,4), " seconds.""")  
+            msg = f"Completed: dropped {expected_record_count} nans and interpolated {expected_records_interpolated} nans in " + \
+                  f"{round(perf_counter()-start_time,4)} seconds."
+            print(msg)  
         else:
             print(f"""---- Variance: expected ({expected_record_count}) and actual ({self.dropped_record_count}) 
                         record removal vary by {record_removal_diff}""")

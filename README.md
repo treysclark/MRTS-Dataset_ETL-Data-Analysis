@@ -110,10 +110,10 @@ The accurracy of the database is validated by record count and annual sales.
 
 - **Record Count**: These functions compare the number of records inserted into the database to the number of monthly sales in the source data. Comparisons are made on the following two categories:
     -  **Combined Sales**: 
-        ![Validate Combined Sales](/images/load/validate-combined-sales.png)
+        ![Validate Combined Sales](/images/load/validate-combined-records.png)
         
     -  **Store Sales**: 
-        ![Validate Store Sales](/images/load/validate-store-sales.png)
+        ![Validate Store Sales](/images/load/validate-store-records.png)
 
 - **Annual Sales**: The MRTS source dataset calculates the annual totals per year for each combined sale and store. These sums are labeled either as "Total" or "CY" for cummulative total. However, if a store has any missing values it's annual total is not calculated in the source dataset. So, the validation of annual sales does not take these rows missing values into account. This should not be a problem because some of the source dataset when grouped by year and NAICS code are missing a significant amount of consecutive monthly sales, which are dropped during the transformation process. 
     ![Validate Totals](/images/load/validate-totals.png) 
@@ -145,7 +145,7 @@ The following section analyzes the economic trends found in some of the results.
 
     ![Monthly Combined Sales w/o Seasonality](/images/analysis/monthly-combined-decompose.png)
     
-    - The trend can also be seen clearly when aggregating monthly sales to annual.
+    - The trend can also be seen clearly when aggregating monthly sales to annual sales.
     
     ![Annual Combined Sales](/images/analysis/annual-combined.png) 
 
@@ -197,25 +197,25 @@ The following section analyzes the economic trends found in some of the results.
 ## Control:
 The control module manages all of the workflows for this project. Users can execute one of ten commands by adding command line arguments during the execution of the script. The commands are as follows:
 - "**-etl**" Run the complete extract, transform, load (including data validation) workflow
-    ![ETL Argument](/images/control/etl-argument.png) 
+    ![ETL Argument](/images/control/etl-arg.png) 
 - "**-clean**" Retrieve the data and transform the store sales
-     ![Clean Argument](/images/control/clean-argument.png) 
+     ![Clean Argument](/images/control/clean-arg.png) 
 - "**-drop_db**" Delete the MRTS database from MYSQL
-     ![Drop DB Argument](/images/control/drop-db-argument.png) 
+     ![Drop DB Argument](/images/control/drop-db-arg.png) 
 - "**-drop_tables**" Delete the MRTS database tables (combined_sales and store_sales) from MYSQL
-     ![Drop Tables Argument](/images/control/drop-tables-argument.png) 
+     ![Drop Tables Argument](/images/control/drop-tables-arg.png) 
 - "**-empty_tables**" Truncate (empty the MRTS database tables (combined_sales and store_sales) from MYSQL while maintaining the table structure
-     ![Empty Tables Argument](/images/control/empty-tables-argument.png) 
+     ![Empty Tables Argument](/images/control/empty-tables-arg.png) 
 - "**-validate**" Verify that the record count and annual totals between the source dataset (Census.gov) and the MYSQL database match 
-     ![Validate Argument](/images/control/validate-argument.png) 
+     ![Validate Argument](/images/control/validate-arg.png) 
 - "**-analyze_combined**" Retrieve charts 
-     ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+     ![Analyze Combined Argument](/images/control/analyze-trends-arg.png) 
 - "**-analyze_combined**" Retrieve charts 
-     ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+     ![Analyze Combined Argument](/images/control/analyze-trend-comparison-arg.png) 
 - "**-analyze_combined**" Retrieve charts 
-     ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+     ![Analyze Combined Argument](/images/control/analyze-percent-change-arg.png) 
 - "**-analyze_combined**" Retrieve charts 
-     ![Analyze Combined Argument](/images/control/analyze-combined-argument.png) 
+     ![Analyze Combined Argument](/images/control/analyze-rolling-time-arg.png) 
         
 ## Conclusion:
 The goal of the project was achieved. Users of the script can execute the whole ETL pipeline by including the "-etl" argument. 
