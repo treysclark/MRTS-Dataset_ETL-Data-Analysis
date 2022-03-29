@@ -1,4 +1,4 @@
-# ETL MRTS Data Analysis
+![Cover Image](/images/readme/cover.png)
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -219,7 +219,7 @@ The following section analyzes the economic trends found in some of the results.
     
     
     - **12 Month Moving Average**:
-        - The last chart shows the monthly car sales with a 12-month moving average applied. The 12-month time period could has successfully smoothed the data. However, it has also further reduce the timeliness of the data [3].
+        - The last chart shows the monthly car sales with a 12-month moving average applied. The 12-month time period could has successfully smoothed the data. However, it has also further reduce the timeliness of the data [3](#references).
          
         ![Rolling Time Windows 12MA Cars](/images/analyze/rolling_time/monthly-12MA.png) 
         ![Rolling Time Windows 12MA Cars Code](/images/analyze/rolling_time/monthly-12MA-code.png) 
