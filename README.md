@@ -128,16 +128,18 @@ The accurracy of the database is validated by record count and annual sales.
         ![Validate Store Sales](/images/load/validate-store-records.png)
 
 - **Annual Sales**: The MRTS source dataset calculates the annual totals per year for each combined sale and store. These sums are labeled either as "Total" or "CY" for cummulative total. However, if a store has any missing values it's annual total is not calculated in the source dataset. So, the validation of annual sales does not take these rows missing values into account. This should not be a problem because some of the source dataset when grouped by year and NAICS code are missing a significant amount of consecutive monthly sales, which are dropped during the transformation process. 
+
     ![Validate Totals](/images/load/validate-totals.png) 
 
 The user is notified if the validation process identifies any variances between the source dataset and the database records.
+
 ![Validation Msg](/images/load/validation-msg.png) 
 
 ## Analyze:
 The main focus of this project was on the ETL workflow. However some analysis was done as well, which consists of the following:
 
 ### Trends: 
-The following section analyzes the economic trends found in some of the results. Economic trends are various indicators that show the financial health of a region or country. These trends are analyzed by various professionals. A few examples of why these trends are monitored are as follows [6]:
+The following section analyzes the economic trends found in some of the results. Economic trends are various indicators that show the financial health of a region or country. These trends are analyzed by various professionals. A few examples of why these trends are monitored are as follows [[6]](#references):
 
 - Identifying the level of productivity
 - Develop forecasts
@@ -151,52 +153,62 @@ The following section analyzes the economic trends found in some of the results.
 
     - When using the monthly data, the trend becomes slightly hidden by seasonal variances. 
     
-    ![Monthly Combined Sales](/images/analyze/trends/monthly-combined.png)
-    ![Monthly Combined Sales Code](/images/analyze/trends/monthly-combined-code.png)
-    
+      ![Monthly Combined Sales](/images/analyze/trends/monthly-combined.png)
+      ![Monthly Combined Sales Code](/images/analyze/trends/monthly-combined-code.png)
+&nbsp;    
     - Monthly data can be smoothed by removing the seasonality from the data.
 
-    ![Monthly Combined Sales w/o Seasonality](/images/analyze/trends/monthly-combined-decompose.png)
-    ![Monthly Combined Sales w/o Seasonality Code](/images/analyze/trends/monthly-combined-decompose-code.png)
+      ![Monthly Combined Sales w/o Seasonality](/images/analyze/trends/monthly-combined-decompose.png)
+      ![Monthly Combined Sales w/o Seasonality Code](/images/analyze/trends/monthly-combined-decompose-code.png)
+&nbsp;
     
     - The trend can also be seen clearly when aggregating monthly sales to annual sales.
     
-    ![Annual Combined Sales](/images/analyze/trends/annual-combined.png) 
-    ![Annual Combined Sales Code](/images/analyze/trends/annual-combined-code.png) 
+      ![Annual Combined Sales](/images/analyze/trends/annual-combined.png) 
+      ![Annual Combined Sales Code](/images/analyze/trends/annual-combined-code.png) 
+&nbsp;
 
 #### Bookstores, Sporting Goods Stores, and Hobbies, Toys, and Games Stores
-- When comparing businesses like bookstores, sporting goods stores, and hobbies, toys, and games stores, it is clear from the charts that sporting goods stores have the highest trend. It grew faster than any other category, especially in the year 2020. That is not surprising since according to McKinsey and Company, there was a significant increase in home gym spending during the initial coronavirus outbreak [2]. However, it is surprising that bookstores began a downward trend during that same time when a large part of the population was staying home. It is hard to believe that online book sales did not increase. However, these sales are likely lumped into the business category, "Electronic shopping and mail-order houses," if the book stores have a separate fulfillment location than their brick-and-mortar stores [7].
+- When comparing businesses like bookstores, sporting goods stores, and hobbies, toys, and games stores, it is clear from the charts that sporting goods stores have the highest trend. It grew faster than any other category, especially in the year 2020. That is not surprising since according to McKinsey and Company, there was a significant increase in home gym spending during the initial coronavirus outbreak [[2]](#references). However, it is surprising that bookstores began a downward trend during that same time when a large part of the population was staying home. It is hard to believe that online book sales did not increase. However, these sales are likely lumped into the business category, "Electronic shopping and mail-order houses," if the book stores have a separate fulfillment location than their brick-and-mortar stores [[7]](#references).
+&nbsp;
 
     ![Monthly Book, Sports, Toys Sales](/images/analyze/trend_comparisons/monthly.png)
     ![Monthly Book, Sports, Toys Sales Code](/images/analyze/trend_comparisons/monthly-code.png)
     
-
+&nbsp;
 - There is significant seasonality in these categories of store sales when looking at monthly data. That is especially true for sporting goods stores and hobbies, toys, and games stores. As a result, it is easier to see trends by aggregating the monthly sales to annual. Trends could also be easier to see using the smoothing techniques mentioned in the analysis of the retail and food services category.
+&nbsp;
 
     ![Annual Book, Sports, Toys Sales](/images/analyze/trend_comparisons/annual.png) 
     ![Annual Book, Sports, Toys Sales Code](/images/analyze/trend_comparisons/annual-code.png) 
 
-
+&nbsp;
 ### Percent of Change:
 
-- The following analysis uses Pandas' Percent Change function to evaluate sales data from the men's and women's clothing stores. Percent of change is a mathematical formula for calculating the degree of change over time. Percentage of change is important for predicting spending patterns because it informs companies on how much to produce in the future. For example, exercise equipment manufacturer Peloton suffered significant damage to its stock price when it was reported that its production far exceeded consumer demand [7]. Timely forecasting is especially needed for companies who rely on Just-In-Time manufacturing. Companies that have lean inventories need to know when demand changes dramatically.
+- The following analysis uses Pandas' Percent Change function to evaluate sales data from the men's and women's clothing stores. Percent of change is a mathematical formula for calculating the degree of change over time. Percentage of change is important for predicting spending patterns because it informs companies on how much to produce in the future. For example, exercise equipment manufacturer Peloton suffered significant damage to its stock price when it was reported that its production far exceeded consumer demand [[7]](#references). Timely forecasting is especially needed for companies who rely on Just-In-Time manufacturing. Companies that have lean inventories need to know when demand changes dramatically.
 
 - The analysis shows that both types of clothing stores are subject to the same market forces.
-
+&nbsp;
     ![Percent of Change Monthly](/images/analyze/percent_change/poc-monthly.png)
     ![Percent of Change Monthly Code](/images/analyze/percent_change/poc-monthly-code.png)
-    
+&nbsp; 
+   
     ![Percent of Change Annual](/images/analyze/percent_change/poc-annual.png)
     ![Percent of Change Annual Code](/images/analyze/percent_change/poc-annual-code.png)
-    
+
+&nbsp;    
 - When comparing the men's and women's clothing stores' percentage of contribution to the whole clothing industry, it is clear that women's clothing stores have dominated sales since 1992 and likely before then as well. Women's clothing stores represented about 37% of clothing sales in 1992 and decreased to about 20% in 2019. Meanwhile, men's clothing only represented about 12% of clothing sales in 1992 and about 5% in 2019.
+&nbsp;
 
     ![Percent of Whole Monthly](/images/analyze/percent_change/pow-monthly.png)
     ![Percent of Whole Monthly Code](/images/analyze/percent_change/pow-monthly-code.png)
-    
+  
+  &nbsp;
+
     ![Percent of Whole Annual](/images/analyze/percent_change/pow-annual.png)
     ![Percent of Whole Annual Code](/images/analyze/percent_change/pow-annual-code.png)
-    
+
+&nbsp;   
 ### Rolling Time Windows: 
 
 - Rolling time windows are used by financial experts to smooth trends in spending patterns. Economic trends are often subject to seasonal variations, making it hard to see underlying trends. According to the Federal Reserve Bank of Dallas, data on its website is smoothed using a 3, 4, or 5-month moving average. Applying moving averages smooths out seasonal fluctuations in the data in order to reduce or remove short-term volatility.
@@ -204,13 +216,15 @@ The following section analyzes the economic trends found in some of the results.
     - It is important to remember there is a trade-off in smoothing data. While larger the moving averages make the data less volatile it decreases its timeliness. However, other moving averages can be used to offset the loss of timeliness, such as weighted moving averages or a centered moving average.
 
     - The following analysis compares new and used car dealer sales. The charts below show the results of monthly new and used car dealer sales with and without various rolling time windows.
+    
+    &nbsp;
     - **Monthly Sales - No Smoothing**:
         -  The first chart shows the monthly car sales without using monthly moving averages.
         
         ![Car Sales](/images/analyze/rolling_time/monthly.png) 
         ![Car Sales Code](/images/analyze/rolling_time/monthly-code.png) 
         
-        
+    &nbsp;   
     - **5 Month Moving Average**:
         - This chart shows the monthly car sales with only a 5-month moving average applied. This increases the smoothness of the chart, but also reduces its timeliness.
     
@@ -218,8 +232,9 @@ The following section analyzes the economic trends found in some of the results.
         ![Rolling Time Windows 5MA Cars Code](/images/analyze/rolling_time/monthly-5MA-code.png) 
     
     
+    &nbsp;
     - **12 Month Moving Average**:
-        - The last chart shows the monthly car sales with a 12-month moving average applied. The 12-month time period could has successfully smoothed the data. However, it has also further reduce the timeliness of the data [3](#references).
+        - The last chart shows the monthly car sales with a 12-month moving average applied. The 12-month time period could has successfully smoothed the data. However, it has also further reduce the timeliness of the data [[3]](#references).
          
         ![Rolling Time Windows 12MA Cars](/images/analyze/rolling_time/monthly-12MA.png) 
         ![Rolling Time Windows 12MA Cars Code](/images/analyze/rolling_time/monthly-12MA-code.png) 
@@ -266,7 +281,9 @@ The control module manages all of the workflows for this project. Users can exec
 - "**-analyze_rolling**" Retrieve charts with moving averages
      
      ![Analyze Rolling Argument](/images/control/rolling-arg.png) 
-     
+
+If a user types in the wrong command, they will receive the following error response:
+![Error Argument](/images/control/error-msg.png) 
         
 ## Conclusion:
 The goal of the project was achieved. Users of the script can execute the whole ETL pipeline by including the "-etl" argument. 
