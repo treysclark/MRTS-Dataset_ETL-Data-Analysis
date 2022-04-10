@@ -1,4 +1,4 @@
-![Cover Image](/images/readme/cover.png)
+![Cover Image](/images/readme/cover_v4.png)
 
 ## Table of Contents
 1. [Overview](#overview)
